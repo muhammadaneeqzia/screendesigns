@@ -2616,7 +2616,12 @@ cardsEl.addEventListener('click',e=>{
     return;
   }
   if(e.target.closest('[data-action="open-photos"]')){state[pt].photosOpen=true;updateCardPhotos(pt);return}
-  if(e.target.closest('[data-action="add-photo"]')){triggerUpload(pt,false);return}
+  if(e.target.closest('[data-action="add-photo"]')){
+    if(state[pt].photos.length>=MAX_PHOTOS){showToast('Maximum '+MAX_PHOTOS+' photos allowed');return}
+    uploadTarget=pt;
+    openCamera(pt);
+    return;
+  }
 });
 
 function updateScore(p,v){state[p].score=+v;updateCardScore(p,v);updateSummary()}

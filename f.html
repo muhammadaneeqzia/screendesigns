@@ -2989,7 +2989,12 @@ cardsEl.addEventListener('click', e => {
     return;
   }
   if (e.target.closest('[data-action="open-photos"]')) { state[pt].photosOpen = true; updateCardPhotos(pt); return; }
-  if (e.target.closest('[data-action="add-photo"]')) { triggerUpload(pt, true); return; }
+  if (e.target.closest('[data-action="add-photo"]')) {
+    if (state[pt].photos.length >= MAX_PHOTOS) { showToast('Maximum ' + MAX_PHOTOS + ' photos allowed'); return; }
+    uploadTarget = pt;
+    openCamera(pt);
+    return;
+  }
 });
 
 function nextCat() { current = Math.min(categories.length - 1, current + 1); renderCategory(); }
