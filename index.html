@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AutoFixia — Screen Designs</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #3B82F6;
+  --primary-dark: #2563EB;
+  --primary-soft: #EFF6FF;
+  --primary-light: #DBEAFE;
+  --border: #93C5FD;
+  --text: #0F172A;
+  --muted: #64748B;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse 80% 50% at 0% -10%, rgba(59, 130, 246, 0.18), transparent),
+    linear-gradient(180deg, #F0F7FF 0%, #F8FAFC 50%, #EEF4FF 100%);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.shell {
+  width: min(100%, 520px);
+  padding: 36px 32px 32px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(147, 197, 253, 0.65);
+  box-shadow: 0 24px 64px rgba(37, 99, 235, 0.14);
+  backdrop-filter: blur(16px);
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.sub {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.picker {
+  margin-top: 28px;
+}
+
+.picker label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.picker-row {
+  display: flex;
+  gap: 10px;
+}
+
+.picker select {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.picker select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.picker button {
+  height: 48px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.28);
+  transition: 0.2s ease;
+}
+
+.picker button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.34);
+}
+
+.links {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--primary-light);
+}
+
+.links p {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.link-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.link-grid a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--primary-light);
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.link-grid a:hover {
+  background: #fff;
+  border-color: var(--border);
+  transform: translateX(2px);
+}
+
+.link-grid a span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="logo">✦</div>
+  <h1>AutoFixia Screen Designs</h1>
+  <p class="sub">Choose s.html or f.html to preview the inspection wizard UI.</p>
+
+  <div class="picker">
+    <label for="designSelect">Select Design</label>
+    <div class="picker-row">
+      <select id="designSelect">
+        <option value="s.html">s.html — Premium Wizard</option>
+        <option value="f.html">f.html — Inspection Path</option>
+      </select>
+      <button type="button" id="openBtn">Open</button>
+    </div>
+  </div>
+
+  <div class="links">
+    <p>Quick links</p>
+    <div class="link-grid">
+      <a href="s.html">s.html — Premium Wizard <span>Open</span></a>
+      <a href="f.html">f.html — Inspection Path <span>Open</span></a>
+    </div>
+  </div>
+</div>
+
+<script>
+const select = document.getElementById('designSelect');
+const openBtn = document.getElementById('openBtn');
+
+function openDesign() {
+  const file = select.value;
+  if (file) window.location.href = file;
+}
+
+openBtn.addEventListener('click', openDesign);
+select.addEventListener('change', openDesign);
+select.addEventListener('keydown', e => {
+  if (e.key === 'Enter') openDesign();
+});
+</script>
+</body>
+</html>
