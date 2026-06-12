@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>AutoFixia Premium Inspection Wizard</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   --primary: #4DA3FF;
@@ -43,7 +43,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: Outfit, system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   color: var(--text);
   min-height: 100vh;
   background:
@@ -1454,6 +1454,36 @@ body::after {
 .range-wrap.fair .range::-webkit-slider-thumb { border-color: var(--fair); }
 .range-wrap.poor .range::-webkit-slider-thumb { border-color: var(--poor); }
 
+.tyre-depth-box {
+  background: linear-gradient(135deg, #F8FAFC, #EEF6FF 50%, #ECFDF5);
+}
+.tyre-depth-box .range-wrap::before {
+  height: 14px;
+  background: repeating-linear-gradient(90deg, #E2E8F0 0, #E2E8F0 calc(100% / 48 - 1px), #CBD5E1 calc(100% / 48 - 1px), #CBD5E1 calc(100% / 48));
+}
+.tyre-depth-box .range-fill { height: 14px; }
+.tyre-depth-box .range::-webkit-slider-thumb {
+  width: 26px;
+  height: 26px;
+  margin-top: -6px;
+}
+.tyre-depth-box .range::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+}
+.tread-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.tyre-depth-ring .circ-text .score-pct,
+.tyre-depth-ring .circ-text b {
+  font-size: 15px;
+}
+
 .status-label {
   font-size: 10px;
   font-weight: 800;
@@ -1518,24 +1548,24 @@ body::after {
 }
 
 .seg.poor.active {
-  background: #FF4444;
+  background: linear-gradient(135deg, #FF7A7A 0%, #FF4444 48%, #E83333 100%);
   border-color: #FF4444;
   color: #fff;
-  box-shadow: 0 6px 16px rgba(255, 68, 68, 0.28);
+  box-shadow: 0 6px 18px rgba(255, 68, 68, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .seg.fair.active {
-  background: #FF9F0B;
+  background: linear-gradient(135deg, #FFB84D 0%, #FF9F0B 48%, #F08C00 100%);
   border-color: #FF9F0B;
   color: #fff;
-  box-shadow: 0 6px 16px rgba(255, 159, 11, 0.28);
+  box-shadow: 0 6px 18px rgba(255, 159, 11, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .seg.good.active {
-  background: #10B981;
+  background: linear-gradient(135deg, #34D399 0%, #10B981 48%, #059669 100%);
   border-color: #10B981;
   color: #fff;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.28);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .actions {
@@ -2483,7 +2513,7 @@ const categories = [
   {name:'Engine Bay Inspection', icon:'EB', points:['Engine Mount Condition','Belts Condition','Hoses Condition','Battery Condition','Air Filter Condition','Engine Noise']},
   {name:'Underbody Inspection', icon:'UB', points:['Underbody Rust','Exhaust Condition','Suspension Bushes','Shock Absorbers','Mounting Bolts','Underbody Damage']},
   {name:'Brake System', icon:'BR', points:['Brake Pad Condition','Brake Disc Condition','Brake Pedal Feel','ABS Warning','Hand Brake','Brake Noise']},
-  {name:'Tyres And Wheels', icon:'TW', points:['Front Tyre Condition','Rear Tyre Condition','Tyre Pressure','Wheel Alignment','Wheel Rims','Wheel Bearing']},
+  {name:'Tyres', icon:'TW', points:['Front Right Tyre','Front Left Tyre','Rear Right Tyre','Rear Left Tyre','Spare Tyre','Tread Depth','Tyre Cracks Or Bulges','Tyre Manufacture Date (DOT)','Tyre Wear Pattern']},
   {name:'Transmission And Drivetrain', icon:'TD', points:['Gear Shift Quality','Transmission Noise','Clutch Condition','Drive Shaft','CV Joint','Differential Noise']},
   {name:'Fluid Leaks', icon:'FL', points:['Engine Leak','Transmission Leak','Coolant Leak','Brake Fluid Leak','Power Steering Leak','Differential Leak']},
   {name:'Road Test Inspection', icon:'RT', points:['Acceleration','Braking','Steering Response','Suspension Comfort','Noise During Drive','Warning Lights']},
@@ -2501,7 +2531,21 @@ let sidebarCollapsed = false;
 let cameraStream = null;
 let lightboxState = { point: null, index: 0 };
 const state = {};
-categories.forEach(c => c.points.forEach(p => state[p] = { score: 85, status: 'Good', notes: false, noteText: '', photosOpen: false, photos: [] }));
+const tyreDepthPoints = ['Front Right Tyre', 'Front Left Tyre', 'Rear Right Tyre', 'Rear Left Tyre', 'Spare Tyre'];
+function isTyreDepthPoint(pt) { return tyreDepthPoints.includes(pt); }
+function treadToScore(mm) { return Math.round((Math.max(0, Math.min(12, mm)) / 12) * 100); }
+function fmtMm(v) { return Number(v).toFixed(2); }
+function rangeStatusByDepth(mm) {
+  if (mm < 3) return 'poor';
+  if (mm < 6) return 'fair';
+  return 'good';
+}
+function initPointState(p) {
+  const tyre = isTyreDepthPoint(p);
+  const depth = 5.5;
+  return { score: tyre ? treadToScore(depth) : 85, status: 'Good', notes: false, noteText: '', photosOpen: false, photos: [], treadDepth: tyre ? depth : undefined };
+}
+categories.forEach(c => c.points.forEach(p => state[p] = initPointState(p)));
 
 const totalPoints = categories.reduce((n, c) => n + c.points.length, 0);
 document.getElementById('heroPoints').textContent = totalPoints;
@@ -2785,7 +2829,33 @@ function catAvgScore(cat) {
   return Math.round(cat.points.reduce((a, p) => a + state[p].score, 0) / cat.points.length);
 }
 
+function tyreDepthRingHTML(mm) {
+  const pct = treadToScore(mm);
+  const r = 30;
+  const { len, off } = circRing(r, pct);
+  const st = rangeStatusByDepth(mm);
+  return `<div class="score-ring ${st} tyre-depth-ring">
+    <div class="circ">
+      <svg viewBox="0 0 76 76">
+        <circle class="circ-inner" cx="38" cy="38" r="${r}"/>
+        <circle class="circ-bg" cx="38" cy="38" r="${r}"/>
+        <circle class="circ-fill" cx="38" cy="38" r="${r}" style="stroke-dasharray:${len};stroke-dashoffset:${off}"/>
+      </svg>
+      <div class="circ-text"><span class="score-pct">${fmtMm(mm)}</span><small>mm</small></div>
+    </div>
+  </div>`;
+}
+
 function buildCardHTML(pt, c, s, idx) {
+  const tyreDepth = isTyreDepthPoint(pt);
+  const depth = Number(s.treadDepth ?? 5.5);
+  const sliderValue = tyreDepth ? fmtMm(depth) : s.score;
+  const fillWidth = tyreDepth ? (depth / 12 * 100) : s.score;
+  const sliderLabel = tyreDepth ? 'Tyre Tread Depth (mm)' : 'Level';
+  const sliderDisplay = tyreDepth ? fmtMm(depth) + ' mm' : s.score + '%';
+  const ringHTML = tyreDepth ? tyreDepthRingHTML(depth) : scoreRingHTML(s.score, s.status);
+  const rangeClass = tyreDepth ? rangeStatusByDepth(depth) : s.status.toLowerCase();
+  const rangeAttrs = tyreDepth ? 'min="0" max="12" step="0.25" data-mode="tread"' : 'min="0" max="100" data-mode="score"';
   const st = s.status.toLowerCase();
   return `<div class="card status-${st}" data-pt="${encodeURIComponent(pt)}" style="animation-delay:${idx * 0.04}s">
     <div class="card-head">
@@ -2796,14 +2866,15 @@ function buildCardHTML(pt, c, s, idx) {
           <span class="status-badge ${st}">${s.status}</span>
         </div>
       </div>
-      ${scoreRingHTML(s.score, s.status)}
+      ${ringHTML}
     </div>
-    <div class="slider-box">
-      <div class="slider-label"><span>Level</span><span class="slider-pct">${s.score}%</span></div>
-      <div class="range-wrap ${st}">
-        <div class="range-fill" style="width:${s.score}%"></div>
-        <input class="range" type="range" min="0" max="100" value="${s.score}">
+    <div class="slider-box ${tyreDepth ? 'tyre-depth-box' : ''}">
+      <div class="slider-label"><span>${sliderLabel}</span><span class="slider-pct">${sliderDisplay}</span></div>
+      <div class="range-wrap ${rangeClass}">
+        <div class="range-fill" style="width:${fillWidth}%"></div>
+        <input class="range" type="range" ${rangeAttrs} value="${sliderValue}">
       </div>
+      ${tyreDepth ? `<div class="tread-scale"><span>0 mm</span><span>3 mm</span><span>6 mm</span><span>9 mm</span><span>12 mm</span></div>` : ''}
     </div>
     <div class="status-label">Condition Status</div>
     <div class="segmented">${statusSegHTML(s)}</div>
@@ -2821,12 +2892,23 @@ function buildCardHTML(pt, c, s, idx) {
 function updateCardScore(pt, score) {
   const card = getCard(pt);
   if (!card) return;
-  card.querySelector('.slider-pct').textContent = score + '%';
-  card.querySelector('.range-fill').style.width = score + '%';
+  const isTread = isTyreDepthPoint(pt);
+  const display = isTread ? fmtMm(score) + ' mm' : score + '%';
+  const pct = isTread ? (Number(score) / 12 * 100) : score;
+  card.querySelector('.slider-pct').textContent = display;
+  card.querySelector('.range-fill').style.width = pct + '%';
   const ringFill = card.querySelector('.score-ring .circ-fill');
-  if (ringFill) setCircFill(ringFill, 30, score);
+  if (ringFill) setCircFill(ringFill, 30, pct);
   const ringText = card.querySelector('.score-ring .circ-text .score-pct');
-  if (ringText) ringText.textContent = score + '%';
+  if (ringText) ringText.textContent = isTread ? fmtMm(score) : score + '%';
+  const ringSmall = card.querySelector('.score-ring .circ-text small');
+  if (ringSmall && isTread) ringSmall.textContent = 'mm';
+  if (isTread) {
+    const st = rangeStatusByDepth(score);
+    card.querySelector('.range-wrap').className = 'range-wrap ' + st;
+    const ring = card.querySelector('.score-ring');
+    if (ring) ring.className = 'score-ring ' + st + ' tyre-depth-ring';
+  }
 }
 
 function updateCardStatus(pt) {
@@ -2835,9 +2917,17 @@ function updateCardStatus(pt) {
   const s = state[pt];
   const st = s.status.toLowerCase();
   card.className = 'card status-' + st;
-  card.querySelector('.range-wrap').className = 'range-wrap ' + st;
-  const ring = card.querySelector('.score-ring');
-  if (ring) ring.className = 'score-ring ' + st;
+  if (isTyreDepthPoint(pt)) {
+    const depth = Number(s.treadDepth ?? 5.5);
+    const depthSt = rangeStatusByDepth(depth);
+    card.querySelector('.range-wrap').className = 'range-wrap ' + depthSt;
+    const ring = card.querySelector('.score-ring');
+    if (ring) ring.className = 'score-ring ' + depthSt + ' tyre-depth-ring';
+  } else {
+    card.querySelector('.range-wrap').className = 'range-wrap ' + st;
+    const ring = card.querySelector('.score-ring');
+    if (ring) ring.className = 'score-ring ' + st;
+  }
   card.querySelectorAll('.seg').forEach(r => r.classList.toggle('active', r.dataset.status === s.status));
   const badge = card.querySelector('.status-badge');
   if (badge) { badge.className = 'status-badge ' + st; badge.textContent = s.status; }
@@ -2969,8 +3059,14 @@ cardsEl.addEventListener('input', e => {
   const pt = getPt(card);
   if (e.target.classList.contains('range')) {
     const v = +e.target.value;
-    state[pt].score = v;
-    updateCardScore(pt, v);
+    if (e.target.dataset.mode === 'tread') {
+      state[pt].treadDepth = v;
+      state[pt].score = treadToScore(v);
+      updateCardScore(pt, v);
+    } else {
+      state[pt].score = v;
+      updateCardScore(pt, v);
+    }
     updateSummary();
   }
   if (e.target.tagName === 'TEXTAREA') state[pt].noteText = e.target.value;

@@ -1071,6 +1071,7 @@ body::after {
   cursor: grab;
 }
 
+
 .tyre-depth-box {
   background: linear-gradient(135deg, #F8FAFC, #EEF6FF 50%, #ECFDF5);
 }
@@ -1078,7 +1079,9 @@ body::after {
   height: 14px;
   background: repeating-linear-gradient(90deg, #E2E8F0 0, #E2E8F0 calc(100% / 48 - 1px), #CBD5E1 calc(100% / 48 - 1px), #CBD5E1 calc(100% / 48));
 }
-.tyre-depth-box .range-fill { height: 14px; }
+.tyre-depth-box .range-fill {
+  height: 14px;
+}
 .tyre-depth-box .range::-webkit-slider-thumb {
   width: 26px;
   height: 26px;
@@ -1096,14 +1099,12 @@ body::after {
   font-weight: 800;
   color: var(--muted);
 }
-.tyre-depth-ring .circ-text b,
-.tyre-depth-ring .circ-text .score-pct {
+.tyre-depth-ring .circ-text b {
   font-size: 15px;
 }
 
 /* ── Status radios ── */
-.status-title,
-.status-label {
+.status-title {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1112,87 +1113,49 @@ body::after {
   margin-bottom: 10px;
 }
 
-.radios,
-.segmented {
-  display: flex;
-  flex-wrap: nowrap;
+.radios {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
 }
 
-.radios::-webkit-scrollbar,
-.segmented::-webkit-scrollbar { display: none; }
-
-.radio,
-.seg {
-  flex: 1 0 auto;
-  min-width: 72px;
-  height: 44px;
-  padding: 0 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(191, 219, 254, 0.95);
-  background: linear-gradient(180deg, #FFFFFF 0%, #F0F7FF 100%);
-  font-size: 15px;
-  font-weight: 600;
-  color: #334155;
+.radio {
+  padding: 12px 10px;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid #E2E8F0;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.08);
-  display: inline-flex;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-family: inherit;
-  white-space: nowrap;
 }
 
-.radio:hover:not(.active),
-.seg:hover:not(.active) {
-  background: linear-gradient(180deg, #FFFFFF 0%, #E3F0FF 100%);
-  border-color: #BFDBFE;
+.radio:hover { transform: translateY(-2px); border-color: #CBD5E1; }
+
+.radio.poor.active {
+  background: var(--poor-bg);
+  border-color: var(--poor-border);
+  color: #B91C1C;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.15);
 }
 
-.radio .status-icon,
-.seg .status-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
+.radio.fair.active {
+  background: var(--fair-bg);
+  border-color: var(--fair-border);
+  color: #2563EB;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.15);
 }
 
-.radio .status-icon svg,
-.seg .status-icon svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
-.radio.poor.active,
-.seg.poor.active {
-  background: linear-gradient(135deg, #FF7A7A 0%, #FF4444 48%, #E83333 100%);
-  border-color: #FF4444;
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(255, 68, 68, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28);
-}
-
-.radio.fair.active,
-.seg.fair.active {
-  background: linear-gradient(135deg, #FFB84D 0%, #FF9F0B 48%, #F08C00 100%);
-  border-color: #FF9F0B;
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(255, 159, 11, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28);
-}
-
-.radio.good.active,
-.seg.good.active {
-  background: linear-gradient(135deg, #34D399 0%, #10B981 48%, #059669 100%);
-  border-color: #10B981;
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+.radio.good.active {
+  background: var(--good-bg);
+  border-color: var(--good-border);
+  color: #047857;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
 }
 
 /* ── Actions ── */
@@ -2167,21 +2130,7 @@ let uploadTarget=null;
 let lightboxState={point:null,index:0};
 let cameraStream=null;
 const state={};
-const tyreDepthPoints=['Front Right Tyre','Front Left Tyre','Rear Right Tyre','Rear Left Tyre','Spare Tyre'];
-function isTyreDepthPoint(pt){return tyreDepthPoints.includes(pt)}
-function treadToScore(mm){return Math.round((Math.max(0,Math.min(12,mm))/12)*100)}
-function fmtMm(v){return Number(v).toFixed(2)}
-function rangeStatusByDepth(mm){
-  if(mm<3)return 'poor';
-  if(mm<6)return 'fair';
-  return 'good';
-}
-function initPointState(p){
-  const tyre=isTyreDepthPoint(p);
-  const depth=5.5;
-  return{score:tyre?treadToScore(depth):85,status:'Good',notes:false,noteText:'',photosOpen:false,photos:[],treadDepth:tyre?depth:undefined};
-}
-categories.forEach(c=>c.points.forEach(p=>state[p]=initPointState(p)));
+categories.forEach(c=>c.points.forEach(p=>state[p]={score:85,status:'Good',notes:false,noteText:'',photosOpen:false,photos:[],treadDepth:6.00}));
 
 const fileInput=document.getElementById('fileInput');
 const cameraInput=document.getElementById('cameraInput');
@@ -2202,6 +2151,19 @@ function showToast(msg){const t=document.getElementById('toast');document.getEle
 function circRing(r,pct){const len=2*Math.PI*r;return{len,off:len*(1-pct/100)}}
 function setCircFill(el,r,pct){const{len,off}=circRing(r,pct);el.style.strokeDasharray=len;el.style.strokeDashoffset=off}
 
+const tyreDepthPoints=['Front Right Tyre','Front Left Tyre','Rear Right Tyre','Rear Left Tyre','Spare Tyre'];
+function isTyreDepthPoint(pt){
+  const c=categories[current];
+  return c&&c.name==='Tyres'&&tyreDepthPoints.includes(pt);
+}
+function treadToScore(mm){return Math.round((Math.max(0,Math.min(12,mm))/12)*100)}
+function fmtMm(v){return Number(v).toFixed(2)}
+function rangeStatusByDepth(mm){
+  if(mm<3)return 'poor';
+  if(mm<6)return 'fair';
+  return 'good';
+}
+
 function scoreRingHTML(pct,status){
   const r=30;const{len,off}=circRing(r,pct);const st=status.toLowerCase();
   return`<div class="score-ring ${st}">
@@ -2211,7 +2173,7 @@ function scoreRingHTML(pct,status){
         <circle class="circ-bg" cx="38" cy="38" r="${r}"/>
         <circle class="circ-fill" cx="38" cy="38" r="${r}" style="stroke-dasharray:${len};stroke-dashoffset:${off}"/>
       </svg>
-      <div class="circ-text"><b>${pct}%</b><small></small></div>
+      <div class="circ-text"><b>${pct}%</b><small>Score</small></div>
     </div>
   </div>`;
 }
@@ -2448,40 +2410,12 @@ const catList=document.getElementById('catList');
 function getCard(pt){return cardsEl.querySelector('[data-pt="'+encodeURIComponent(pt)+'"]')}
 function getPt(el){return decodeURIComponent(el.dataset.pt)}
 
-function statusIcon(type){
-  if(type==='poor')return'<span class="status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>';
-  if(type==='fair')return'<span class="status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg></span>';
-  return'<span class="status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5 5-5"/></svg></span>';
-}
-
-function statusRadiosHTML(s){
-  return[
-    ['poor','Poor'],
-    ['fair','Fair'],
-    ['good','Good']
-  ].map(([type,label])=>`<div class="radio ${type} ${s.status===label?'active':''}" data-status="${label}">${statusIcon(type)}${label}</div>`).join('');
-}
-
-function tyreDepthRingHTML(mm){
-  const pct=treadToScore(mm);const r=30;const{len,off}=circRing(r,pct);const st=rangeStatusByDepth(mm);
-  return`<div class="score-ring ${st} tyre-depth-ring">
-    <div class="circ">
-      <svg viewBox="0 0 76 76" width="76" height="76">
-        <circle class="circ-inner" cx="38" cy="38" r="${r}"/>
-        <circle class="circ-bg" cx="38" cy="38" r="${r}"/>
-        <circle class="circ-fill" cx="38" cy="38" r="${r}" style="stroke-dasharray:${len};stroke-dashoffset:${off}"/>
-      </svg>
-      <div class="circ-text"><b>${fmtMm(mm)}</b><small>mm</small></div>
-    </div>
-  </div>`;
-}
-
 function buildCardHTML(pt,c,s,idx){
   const tyreDepth=isTyreDepthPoint(pt);
-  const depth=Number(s.treadDepth ?? 5.5);
+  const depth=Number(s.treadDepth ?? 6);
   const sliderValue=tyreDepth?fmtMm(depth):s.score;
   const fillWidth=tyreDepth?(depth/12*100):s.score;
-  const sliderLabel=tyreDepth?'Tyre Tread Depth (mm)':'Level';
+  const sliderLabel=tyreDepth?'Tyre Tread Depth (mm)':'Health Score';
   const sliderDisplay=tyreDepth?fmtMm(depth)+' mm':s.score+'%';
   const ringHTML=tyreDepth?tyreDepthRingHTML(depth):scoreRingHTML(s.score,s.status);
   const rangeClass=tyreDepth?rangeStatusByDepth(depth):s.status.toLowerCase();
@@ -2502,7 +2436,11 @@ function buildCardHTML(pt,c,s,idx){
       ${tyreDepth?`<div class="tread-scale"><span>0 mm</span><span>3 mm</span><span>6 mm</span><span>9 mm</span><span>12 mm</span></div>`:''}
     </div>
     <div class="status-title">Condition Status</div>
-    <div class="radios">${statusRadiosHTML(s)}</div>
+    <div class="radios">
+      <div class="radio poor ${s.status==='Poor'?'active':''}" data-status="Poor">Poor</div>
+      <div class="radio fair ${s.status==='Fair'?'active':''}" data-status="Fair">Fair</div>
+      <div class="radio good ${s.status==='Good'?'active':''}" data-status="Good">Good</div>
+    </div>
     <div class="actions">
       <button type="button" class="btn notes ${s.notes?'active':''}" data-action="notes">Comments</button>
       <button type="button" class="btn photo ${s.photosOpen?'active':''}" data-action="photos">Photos${s.photos.length?`<span class="badge">${s.photos.length}</span>`:''}</button>
@@ -2511,6 +2449,20 @@ function buildCardHTML(pt,c,s,idx){
       <textarea placeholder="Add inspection comments for ${pt}...">${s.noteText||''}</textarea>
     </div>
     <div class="card-extra">${!s.photosOpen&&s.photos.length?renderMiniGallery(pt):''}${s.photosOpen?renderPhotoPanel(pt):''}</div>
+  </div>`;
+}
+
+function tyreDepthRingHTML(mm){
+  const pct=treadToScore(mm);const r=30;const{len,off}=circRing(r,pct);const st=rangeStatusByDepth(mm);
+  return`<div class="score-ring ${st} tyre-depth-ring">
+    <div class="circ">
+      <svg viewBox="0 0 76 76" width="76" height="76">
+        <circle class="circ-inner" cx="38" cy="38" r="${r}"/>
+        <circle class="circ-bg" cx="38" cy="38" r="${r}"/>
+        <circle class="circ-fill" cx="38" cy="38" r="${r}" style="stroke-dasharray:${len};stroke-dashoffset:${off}"/>
+      </svg>
+      <div class="circ-text"><b>${fmtMm(mm)}</b><small>mm</small></div>
+    </div>
   </div>`;
 }
 
@@ -2540,17 +2492,9 @@ function updateCardStatus(pt){
   const s=state[pt];
   const st=s.status.toLowerCase();
   card.className='card status-'+st;
-  if(isTyreDepthPoint(pt)){
-    const depth=Number(s.treadDepth ?? 5.5);
-    const depthSt=rangeStatusByDepth(depth);
-    card.querySelector('.range-wrap').className='range-wrap '+depthSt;
-    const ring=card.querySelector('.score-ring');
-    if(ring)ring.className='score-ring '+depthSt+' tyre-depth-ring';
-  }else{
-    card.querySelector('.range-wrap').className='range-wrap '+st;
-    const ring=card.querySelector('.score-ring');
-    if(ring)ring.className='score-ring '+st;
-  }
+  card.querySelector('.range-wrap').className='range-wrap '+st;
+  const ring=card.querySelector('.score-ring');
+  if(ring)ring.className='score-ring '+st;
   card.querySelectorAll('.radio').forEach(r=>{
     r.classList.toggle('active',r.dataset.status===s.status);
   });
@@ -2709,12 +2653,7 @@ cardsEl.addEventListener('click',e=>{
     return;
   }
   if(e.target.closest('[data-action="open-photos"]')){state[pt].photosOpen=true;updateCardPhotos(pt);return}
-  if(e.target.closest('[data-action="add-photo"]')){
-    if(state[pt].photos.length>=MAX_PHOTOS){showToast('Maximum '+MAX_PHOTOS+' photos allowed');return}
-    uploadTarget=pt;
-    openCamera(pt);
-    return;
-  }
+  if(e.target.closest('[data-action="add-photo"]')){triggerUpload(pt,false);return}
 });
 
 function updateScore(p,v){state[p].score=+v;updateCardScore(p,v);updateSummary()}
