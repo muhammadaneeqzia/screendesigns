@@ -744,8 +744,16 @@ body.progress-dragging .progress-thumb {
 .score-ring { flex-shrink: 0; }
 
 .score-ring .circ {
+  position: relative;
   width: 76px;
   height: 76px;
+}
+
+.score-ring .circ svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
 }
 
 .score-ring .circ-inner { fill: #F8FAFC; }
@@ -767,19 +775,25 @@ body.progress-dragging .progress-thumb {
   align-items: center;
   justify-content: center;
   gap: 1px;
+  z-index: 2;
+  pointer-events: none;
 }
 
-.score-ring .circ-text b {
+.score-ring .circ-text b,
+.score-ring .circ-text .score-pct {
   font-size: 17px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1;
   color: var(--primary-dark);
 }
 
-.score-ring.good .circ-text b { color: #047857; }
-.score-ring.fair .circ-text b { color: #C2410C; }
-.score-ring.poor .circ-text b { color: #DC2626; }
+.score-ring.good .circ-text b,
+.score-ring.good .circ-text .score-pct { color: #047857; }
+.score-ring.fair .circ-text b,
+.score-ring.fair .circ-text .score-pct { color: #C2410C; }
+.score-ring.poor .circ-text b,
+.score-ring.poor .circ-text .score-pct { color: #DC2626; }
 
 .score-ring .circ-text small {
   font-size: 8px;
@@ -1067,6 +1081,20 @@ body.progress-dragging .progress-thumb {
   display: flex;
   gap: 10px;
   margin-top: 16px;
+  position: relative;
+  z-index: 3;
+}
+
+.card-extra {
+  margin-top: 4px;
+  position: relative;
+  z-index: 3;
+}
+
+.note-editor {
+  margin-top: 14px;
+  position: relative;
+  z-index: 3;
 }
 
 .btn {
@@ -1107,8 +1135,6 @@ body.progress-dragging .progress-thumb {
 .btn.photo:hover {
   box-shadow: 0 10px 28px rgba(37, 99, 235, 0.38);
 }
-
-.note-editor { margin-top: 14px; }
 
 .note-editor textarea {
   width: 100%;
@@ -1162,6 +1188,8 @@ body.progress-dragging .progress-thumb {
   color: var(--text-secondary);
   white-space: pre-wrap;
   word-break: break-word;
+  position: relative;
+  z-index: 3;
 }
 
 .saved-comment::before {
@@ -2165,7 +2193,7 @@ function scoreRingHTML(pct,status){
         <circle class="circ-bg" cx="38" cy="38" r="${r}"/>
         <circle class="circ-fill" cx="38" cy="38" r="${r}" style="stroke-dasharray:${len};stroke-dashoffset:${off}"/>
       </svg>
-      <div class="circ-text"><b>${pct}%</b><small></small></div>
+      <div class="circ-text"><span class="score-pct">${pct}%</span><small></small></div>
     </div>
   </div>`;
 }
@@ -2387,7 +2415,7 @@ function renderPhotoPanel(pt){
       </div>`;
     });
     if(canAdd){
-      html+=`<div class="thumb-add" data-action="add-photo"><span>+</span><small>Add More</small></div>`;
+      html+=`<div class="thumb-add" data-action="add-photo" onclick="event.stopPropagation();triggerUpload('${esc(pt)}',true)"><span>+</span><small>Add More</small></div>`;
     }
     html+=`</div>`;
   }
@@ -2492,7 +2520,7 @@ function updateCardScore(pt,score){
   card.querySelector('.range-fill').style.width=pct+'%';
   const ringFill=card.querySelector('.score-ring .circ-fill');
   if(ringFill)setCircFill(ringFill,30,pct);
-  const ringText=card.querySelector('.score-ring .circ-text b');
+  const ringText=card.querySelector('.score-ring .circ-text .score-pct')||card.querySelector('.score-ring .circ-text b');
   if(ringText)ringText.textContent=cfg?fmtMm(score):score+'%';
   const ringSmall=card.querySelector('.score-ring .circ-text small');
   if(ringSmall&&cfg)ringSmall.textContent='mm';
@@ -2758,24 +2786,20 @@ cardsEl.addEventListener('click',e=>{
   if(radio){state[pt].status=radio.dataset.status;updateCardStatus(pt);updateSummary();return}
   const action=e.target.closest('[data-action]');
   if(action){
-    if(action.dataset.action==='notes'){
+    const act=action.dataset.action;
+    if(act==='notes'){
       state[pt].notes=!state[pt].notes;
       if(state[pt].notes){
         const ta=card.querySelector('.note-editor textarea');
         if(ta)ta.value=state[pt].noteText||'';
       }
       updateCardNotes(pt);
+      return;
     }
-    if(action.dataset.action==='save-comment'){saveComment(pt);return}
-    if(action.dataset.action==='photos'){state[pt].photosOpen=!state[pt].photosOpen;updateCardPhotos(pt)}
-    return;
-  }
-  if(e.target.closest('[data-action="open-photos"]')){state[pt].photosOpen=true;updateCardPhotos(pt);return}
-  if(e.target.closest('[data-action="add-photo"]')){
-    if(state[pt].photos.length>=MAX_PHOTOS){showToast('Maximum '+MAX_PHOTOS+' photos allowed');return}
-    uploadTarget=pt;
-    openCamera(pt);
-    return;
+    if(act==='save-comment'){saveComment(pt);return}
+    if(act==='photos'){state[pt].photosOpen=!state[pt].photosOpen;updateCardPhotos(pt);return}
+    if(act==='open-photos'){state[pt].photosOpen=true;updateCardPhotos(pt);return}
+    if(act==='add-photo'){triggerUpload(pt,true);return}
   }
 });
 

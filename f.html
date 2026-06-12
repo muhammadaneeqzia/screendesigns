@@ -1403,6 +1403,20 @@ body.progress-dragging .progress-thumb {
   display: flex;
   gap: 8px;
   margin-top: 14px;
+  position: relative;
+  z-index: 3;
+}
+
+.card-extra {
+  margin-top: 4px;
+  position: relative;
+  z-index: 3;
+}
+
+.note-editor {
+  margin-top: 12px;
+  position: relative;
+  z-index: 3;
 }
 
 .btn {
@@ -1455,8 +1469,6 @@ body.progress-dragging .progress-thumb {
   font-size: 10px;
 }
 
-.note-editor { margin-top: 12px; }
-
 .note-editor textarea {
   width: 100%;
   min-height: 76px;
@@ -1508,6 +1520,8 @@ body.progress-dragging .progress-thumb {
   color: var(--text-secondary);
   white-space: pre-wrap;
   word-break: break-word;
+  position: relative;
+  z-index: 3;
 }
 
 .saved-comment::before {
@@ -1561,6 +1575,8 @@ body.progress-dragging .progress-thumb {
   align-items: center;
   justify-content: center;
   gap: 1px;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .score-ring .circ-text .score-pct {
@@ -1582,8 +1598,6 @@ body.progress-dragging .progress-thumb {
   letter-spacing: 0.1em;
   color: var(--muted);
 }
-
-.card-extra { margin-top: 4px; }
 
 /* ── Photos ── */
 .photos-panel {
@@ -2796,7 +2810,7 @@ function renderPhotoPanel(pt) {
         </div>
       </div>`;
     });
-    if (canAdd) html += `<div class="thumb-add" data-action="add-photo">+</div>`;
+    if (canAdd) html += `<div class="thumb-add" data-action="add-photo" onclick="event.stopPropagation();triggerUpload('${esc(pt)}',true)"><span>+</span><small>Add More</small></div>`;
     html += `</div>`;
   }
   html += `</div>`;
@@ -3060,24 +3074,20 @@ cardsEl.addEventListener('click', e => {
   if (seg) { state[pt].status = seg.dataset.status; updateCardStatus(pt); updateSummary(); return; }
   const action = e.target.closest('[data-action]');
   if (action) {
-    if (action.dataset.action === 'notes') {
+    const act = action.dataset.action;
+    if (act === 'notes') {
       state[pt].notes = !state[pt].notes;
       if (state[pt].notes) {
         const ta = card.querySelector('.note-editor textarea');
         if (ta) ta.value = state[pt].noteText || '';
       }
       updateCardNotes(pt);
+      return;
     }
-    if (action.dataset.action === 'save-comment') { saveComment(pt); return; }
-    if (action.dataset.action === 'photos') { state[pt].photosOpen = !state[pt].photosOpen; updateCardPhotos(pt); }
-    return;
-  }
-  if (e.target.closest('[data-action="open-photos"]')) { state[pt].photosOpen = true; updateCardPhotos(pt); return; }
-  if (e.target.closest('[data-action="add-photo"]')) {
-    if (state[pt].photos.length >= MAX_PHOTOS) { showToast('Maximum ' + MAX_PHOTOS + ' photos allowed'); return; }
-    uploadTarget = pt;
-    openCamera(pt);
-    return;
+    if (act === 'save-comment') { saveComment(pt); return; }
+    if (act === 'photos') { state[pt].photosOpen = !state[pt].photosOpen; updateCardPhotos(pt); return; }
+    if (act === 'open-photos') { state[pt].photosOpen = true; updateCardPhotos(pt); return; }
+    if (act === 'add-photo') { triggerUpload(pt, true); return; }
   }
 });
 
