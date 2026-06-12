@@ -177,6 +177,35 @@ h1 {
   font-weight: 600;
   color: var(--muted);
 }
+
+@media (max-width: 640px) {
+  body {
+    padding: 16px;
+    align-items: flex-start;
+    padding-top: max(16px, env(safe-area-inset-top, 0px));
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .shell {
+    padding: 28px 22px 24px;
+    border-radius: 22px;
+  }
+
+  h1 { font-size: 24px; }
+
+  .picker-row {
+    flex-direction: column;
+  }
+
+  .picker button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .shell { padding: 24px 18px 20px; }
+  .logo { width: 48px; height: 48px; font-size: 20px; }
+}
 </style>
 </head>
 <body>

@@ -208,6 +208,11 @@ body {
   letter-spacing: 0.01em;
 }
 
+.vehicle-vin span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .vehicle-vin svg {
   width: 20px;
   height: 20px;
@@ -2156,57 +2161,368 @@ body.progress-dragging .progress-thumb {
 }
 
 /* ── Responsive ── */
+@media (max-width: 1200px) {
+  .app { padding: 14px 18px 96px; }
+  .bento { grid-template-columns: repeat(2, 1fr); }
+  .stat-hero { grid-column: 1 / -1; }
+}
+
 @media (max-width: 1100px) {
   .bento { grid-template-columns: repeat(2, 1fr); }
   .stat-hero { grid-column: 1 / -1; }
   .cards { grid-template-columns: 1fr; }
+  .panel-head { padding: 22px 24px; }
 }
 
 @media (max-width: 900px) {
-  .progress-cats .timeline { padding-bottom: 8px; }
+  .app {
+    padding: 12px 16px calc(100px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .shell-header {
+    top: env(safe-area-inset-top, 0px);
+    padding: 8px 0 16px;
+  }
+
+  .vehicle-header { border-radius: 16px; }
+
   .vehicle-header-inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-    padding: 16px;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    grid-template-areas: "logo info health";
+    align-items: center;
+    gap: 10px 12px;
+    padding: 12px;
   }
+
   .vehicle-logo-wrap {
-    margin-right: 0;
-    padding-right: 0;
+    grid-area: logo;
+    margin: 0;
+    padding: 0;
     border-right: none;
-    justify-content: center;
+    justify-content: flex-start;
   }
+
+  .vehicle-logo-box {
+    width: 72px;
+    height: 72px;
+    padding: 8px;
+    border-radius: 14px;
+  }
+
   .vehicle-info {
+    grid-area: info;
     padding-right: 0;
-    text-align: center;
+    text-align: left;
+    min-width: 0;
   }
-  .vehicle-vin { justify-content: center; }
+
+  .vehicle-info h1 {
+    font-size: clamp(16px, 4.2vw, 21px);
+    line-height: 1.12;
+  }
+
+  .vehicle-model {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .vehicle-vin {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-top: 6px;
+    font-size: 10px;
+    gap: 5px;
+    max-width: 100%;
+  }
+
+  .vehicle-vin svg {
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .vehicle-vin span {
+    max-width: 100%;
+    text-align: left;
+    line-height: 1.35;
+  }
+
   .vehicle-health {
-    width: 100%;
-    max-width: 160px;
+    grid-area: health;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 8px 6px 6px;
+    border-radius: 14px;
+    align-self: center;
+  }
+
+  .vehicle-health small {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .vehicle-health-ring {
+    width: 68px;
+    height: 68px;
     margin: 0 auto;
   }
-  .section-bar { align-items: flex-start; }
+
+  .vehicle-health-ring svg {
+    width: 68px;
+    height: 68px;
+  }
+
+  .vhr-pct { font-size: 17px; }
+
+  .panel-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding: 18px 16px;
+    border-radius: var(--radius-lg);
+  }
+
+  .panel-head-left { width: 100%; }
+
   .panel-head-right {
     width: 100%;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: space-between;
     min-width: 0;
+    gap: 14px;
   }
-  .progress-block { max-width: none; width: 100%; }
+
+  .progress-block {
+    max-width: none;
+    width: 100%;
+  }
+
+  .progress-steps { display: none; }
+  .progress-cats .cat { font-size: 11px; padding: 4px 8px; }
+
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat { padding: 14px 16px; }
+  .stat .val { font-size: 28px; }
+
+  .section-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .card {
+    padding: 18px 16px 16px;
+  }
+
+  .card:hover { transform: none; }
+
+  .card-head { gap: 10px; }
+  .card-top h3 { font-size: 14px; }
+
+  .score-ring .circ {
+    width: 68px;
+    height: 68px;
+  }
+
+  .score-ring .circ svg {
+    width: 68px;
+    height: 68px;
+  }
+
+  .seg {
+    min-width: 68px;
+    height: 40px;
+    font-size: 13px;
+    padding: 0 12px;
+  }
+
+  .upload-btns {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .upload-btn { width: 100%; }
+
+  .thumb-wrap,
+  .thumb-add {
+    flex: 0 0 104px;
+    width: 104px;
+    height: 104px;
+  }
+
+  .float-nav {
+    width: calc(100% - 32px);
+    max-width: 520px;
+    justify-content: space-between;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    padding: 8px;
+  }
+
+  .float-nav .dock-label { display: none; }
+
+  .float-nav button {
+    padding: 11px 14px;
+    font-size: 12px;
+  }
+
+  .float-nav .next {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .camera-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .camera-modal-inner {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+  }
 }
 
 @media (max-width: 640px) {
-  .app { padding: 12px 14px 96px; }
+  .app {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
   .bento { grid-template-columns: 1fr 1fr; }
-  .panel-head { padding: 16px; }
-  .panel-head-right { width: 100%; }
-  .progress-block { width: 100%; }
-  .float-nav { width: calc(100% - 28px); justify-content: space-between; }
-  .float-nav .dock-label { display: none; }
+
+  .stat-hero { grid-column: 1 / -1; }
+
+  .cat-icon-lg {
+    width: 52px;
+    height: 52px;
+    font-size: 17px;
+    border-radius: 14px;
+  }
+
+  .step-ring {
+    width: 64px;
+    height: 64px;
+  }
+
+  .step-pill,
+  .step-badge {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+
+  .seg {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 8px;
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .seg .status-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .seg .status-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn { width: 100%; }
+
+  .float-nav {
+    width: calc(100% - 24px);
+  }
+
+  .float-nav button {
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+
   .lb-prev { left: 8px; }
   .lb-next { right: 8px; }
   .lb-close { top: 8px; right: 8px; }
+}
+
+@media (max-width: 480px) {
+  .bento { grid-template-columns: 1fr; }
+
+  .vehicle-logo-box {
+    width: 64px;
+    height: 64px;
+    padding: 7px;
+  }
+
+  .vehicle-info h1 { font-size: 16px; }
+
+  .vehicle-health-ring,
+  .vehicle-health-ring svg {
+    width: 62px;
+    height: 62px;
+  }
+
+  .vhr-pct { font-size: 15px; }
+
+  .panel-head h2 { font-size: 22px; }
+
+  .stat .val { font-size: 24px; }
+
+  .note-editor textarea { min-height: 76px; }
+}
+
+@media (max-width: 360px) {
+  .vehicle-header-inner {
+    grid-template-columns: 58px minmax(0, 1fr);
+    grid-template-areas:
+      "logo info"
+      "health health";
+    gap: 8px 10px;
+    padding: 10px;
+  }
+
+  .vehicle-health {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+  }
+
+  .vehicle-health-ring,
+  .vehicle-health-ring svg {
+    width: 58px;
+    height: 58px;
+  }
+
+  .vehicle-info h1 { font-size: 15px; }
+  .vehicle-model { font-size: 11px; }
+  .vehicle-vin { font-size: 9px; }
+  .float-nav button { padding: 10px 8px; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .card:hover,
+  .stat:hover {
+    transform: none;
+  }
+
+  .btn:hover { transform: none; }
+  .float-nav button:hover:not(:disabled):not(.next) { background: transparent; }
+  .thumb-wrap:hover { transform: none; }
 }
 </style>
 </head>
