@@ -1071,24 +1071,33 @@ body::after {
   cursor: grab;
 }
 
-.tyre-depth-box {
+.tyre-depth-box,
+.measure-mm-box {
   background: linear-gradient(135deg, #F8FAFC, #EEF6FF 50%, #ECFDF5);
 }
-.tyre-depth-box .range-wrap::before {
+.tyre-depth-box .range-wrap::before,
+.measure-mm-box .range-wrap::before {
   height: 14px;
   background: repeating-linear-gradient(90deg, #E2E8F0 0, #E2E8F0 calc(100% / 48 - 1px), #CBD5E1 calc(100% / 48 - 1px), #CBD5E1 calc(100% / 48));
 }
-.tyre-depth-box .range-fill { height: 14px; }
-.tyre-depth-box .range::-webkit-slider-thumb {
+.measure-mm-box.disc-measure .range-wrap::before {
+  background: repeating-linear-gradient(90deg, #E2E8F0 0, #E2E8F0 calc(100% / 40 - 1px), #CBD5E1 calc(100% / 40 - 1px), #CBD5E1 calc(100% / 40));
+}
+.tyre-depth-box .range-fill,
+.measure-mm-box .range-fill { height: 14px; }
+.tyre-depth-box .range::-webkit-slider-thumb,
+.measure-mm-box .range::-webkit-slider-thumb {
   width: 26px;
   height: 26px;
   margin-top: -6px;
 }
-.tyre-depth-box .range::-moz-range-thumb {
+.tyre-depth-box .range::-moz-range-thumb,
+.measure-mm-box .range::-moz-range-thumb {
   width: 26px;
   height: 26px;
 }
-.tread-scale {
+.tread-scale,
+.measure-scale {
   display: flex;
   justify-content: space-between;
   margin-top: 8px;
@@ -1097,7 +1106,9 @@ body::after {
   color: var(--muted);
 }
 .tyre-depth-ring .circ-text b,
-.tyre-depth-ring .circ-text .score-pct {
+.tyre-depth-ring .circ-text .score-pct,
+.measure-mm-ring .circ-text b,
+.measure-mm-ring .circ-text .score-pct {
   font-size: 15px;
 }
 
@@ -1241,9 +1252,9 @@ body::after {
   box-shadow: 0 10px 28px rgba(37, 99, 235, 0.38);
 }
 
-.note-area { margin-top: 14px; }
+.note-editor { margin-top: 14px; }
 
-.note-area textarea {
+.note-editor textarea {
   width: 100%;
   min-height: 88px;
   padding: 14px 16px;
@@ -1260,9 +1271,52 @@ body::after {
   line-height: 1.5;
 }
 
-.note-area textarea:focus {
+.note-editor textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.note-save {
+  display: none;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+  transition: var(--transition);
+}
+
+.note-save:hover { transform: translateY(-1px); }
+
+.saved-comment {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-light);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.saved-comment::before {
+  content: 'Saved Comment';
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 6px;
 }
 
 /* ── Photo Upload & Gallery ── */
@@ -2149,7 +2203,7 @@ const categories=[
  {name:'Interior Inspection', icon:'💺', points:['Dashboard Condition','Seat Condition','AC Cooling','Interior Lights','Seat Belts','Infotainment System']},
  {name:'Engine Bay Inspection', icon:'🔧', points:['Engine Mount Condition','Belts Condition','Hoses Condition','Battery Condition','Air Filter Condition','Engine Noise']},
  {name:'Underbody Inspection', icon:'🛠', points:['Underbody Rust','Exhaust Condition','Suspension Bushes','Shock Absorbers','Mounting Bolts','Underbody Damage']},
- {name:'Brake System', icon:'🛑', points:['Brake Pad Condition','Brake Disc Condition','Brake Pedal Feel','ABS Warning','Hand Brake','Brake Noise']},
+ {name:'Brake System', icon:'🛑', points:['FR Brake Pad','FR Disc','FL Brake Pad','FL Disc','RR Brake Pad','RR Disc','RL Brake Pad','RL Disc']},
  {name:'Tyres', icon:'🛞', points:['Front Right Tyre','Front Left Tyre','Rear Right Tyre','Rear Left Tyre','Spare Tyre','Tread Depth','Tyre Cracks Or Bulges','Tyre Manufacture Date (DOT)','Tyre Wear Pattern']},
  {name:'Transmission And Drivetrain', icon:'⚙️', points:['Gear Shift Quality','Transmission Noise','Clutch Condition','Drive Shaft','CV Joint','Differential Noise']},
  {name:'Fluid Leaks', icon:'💧', points:['Engine Leak','Transmission Leak','Coolant Leak','Brake Fluid Leak','Power Steering Leak','Differential Leak']},
@@ -2168,18 +2222,54 @@ let lightboxState={point:null,index:0};
 let cameraStream=null;
 const state={};
 const tyreDepthPoints=['Front Right Tyre','Front Left Tyre','Rear Right Tyre','Rear Left Tyre','Spare Tyre'];
-function isTyreDepthPoint(pt){return tyreDepthPoints.includes(pt)}
-function treadToScore(mm){return Math.round((Math.max(0,Math.min(12,mm))/12)*100)}
-function fmtMm(v){return Number(v).toFixed(2)}
-function rangeStatusByDepth(mm){
+const brakePadPoints=['FR Brake Pad','FL Brake Pad','RR Brake Pad','RL Brake Pad'];
+const brakeDiscPoints=['FR Disc','FL Disc','RR Disc','RL Disc'];
+const measureDefaults={
+  'Front Right Tyre':5.5,'Front Left Tyre':5.5,'Rear Right Tyre':5.5,'Rear Left Tyre':5.5,'Spare Tyre':5.5,
+  'FR Brake Pad':8.25,'FL Brake Pad':12,'RR Brake Pad':12,'RL Brake Pad':6,
+  'FR Disc':21,'FL Disc':40,'RR Disc':40,'RL Disc':20
+};
+function rangeStatusPadTyre(mm){
   if(mm<3)return 'poor';
   if(mm<6)return 'fair';
   return 'good';
 }
+function rangeStatusDisc(mm){
+  if(mm<15)return 'poor';
+  if(mm<22)return 'fair';
+  return 'good';
+}
+function getMeasureConfig(pt){
+  if(tyreDepthPoints.includes(pt)||brakePadPoints.includes(pt)){
+    return{
+      max:12,step:0.25,
+      label:brakePadPoints.includes(pt)?'Brake Pad Thickness (mm)':'Tyre Tread Depth (mm)',
+      scale:['0 mm','3 mm','6 mm','9 mm','12 mm'],
+      status:rangeStatusPadTyre,
+      disc:false
+    };
+  }
+  if(brakeDiscPoints.includes(pt)){
+    return{
+      max:40,step:0.25,
+      label:'Brake Disc Thickness (mm)',
+      scale:['0 mm','10 mm','20 mm','30 mm','40 mm'],
+      status:rangeStatusDisc,
+      disc:true
+    };
+  }
+  return null;
+}
+function isMeasurePoint(pt){return !!getMeasureConfig(pt)}
+function mmToScore(mm,max){return Math.round((Math.max(0,Math.min(max,mm))/max)*100)}
+function fmtMm(v){return Number(v).toFixed(2)}
 function initPointState(p){
-  const tyre=isTyreDepthPoint(p);
-  const depth=5.5;
-  return{score:tyre?treadToScore(depth):85,status:'Good',notes:false,noteText:'',photosOpen:false,photos:[],treadDepth:tyre?depth:undefined};
+  const cfg=getMeasureConfig(p);
+  if(cfg){
+    const val=measureDefaults[p]??(cfg.max===12?5.5:20);
+    return{score:mmToScore(val,cfg.max),status:'Good',notes:false,noteText:'',photosOpen:false,photos:[],measureMm:val};
+  }
+  return{score:85,status:'Good',notes:false,noteText:'',photosOpen:false,photos:[]};
 }
 categories.forEach(c=>c.points.forEach(p=>state[p]=initPointState(p)));
 
@@ -2196,6 +2286,9 @@ fileInput.addEventListener('change',onFilesPicked);
 cameraInput.addEventListener('change',onFilesPicked);
 
 function esc(s){return s.replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+function escHtml(t){
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 function pid(s){return s.replace(/[^a-zA-Z0-9]/g,'_')}
 function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(showToast._t);showToast._t=setTimeout(()=>t.classList.remove('show'),2800)}
 
@@ -2462,9 +2555,9 @@ function statusRadiosHTML(s){
   ].map(([type,label])=>`<div class="radio ${type} ${s.status===label?'active':''}" data-status="${label}">${statusIcon(type)}${label}</div>`).join('');
 }
 
-function tyreDepthRingHTML(mm){
-  const pct=treadToScore(mm);const r=30;const{len,off}=circRing(r,pct);const st=rangeStatusByDepth(mm);
-  return`<div class="score-ring ${st} tyre-depth-ring">
+function mmMeasureRingHTML(mm,cfg){
+  const pct=mmToScore(mm,cfg.max);const r=30;const{len,off}=circRing(r,pct);const st=cfg.status(mm);
+  return`<div class="score-ring ${st} measure-mm-ring">
     <div class="circ">
       <svg viewBox="0 0 76 76" width="76" height="76">
         <circle class="circ-inner" cx="38" cy="38" r="${r}"/>
@@ -2477,15 +2570,17 @@ function tyreDepthRingHTML(mm){
 }
 
 function buildCardHTML(pt,c,s,idx){
-  const tyreDepth=isTyreDepthPoint(pt);
-  const depth=Number(s.treadDepth ?? 5.5);
-  const sliderValue=tyreDepth?fmtMm(depth):s.score;
-  const fillWidth=tyreDepth?(depth/12*100):s.score;
-  const sliderLabel=tyreDepth?'Tyre Tread Depth (mm)':'Level';
-  const sliderDisplay=tyreDepth?fmtMm(depth)+' mm':s.score+'%';
-  const ringHTML=tyreDepth?tyreDepthRingHTML(depth):scoreRingHTML(s.score,s.status);
-  const rangeClass=tyreDepth?rangeStatusByDepth(depth):s.status.toLowerCase();
-  const rangeAttrs=tyreDepth?'min="0" max="12" step="0.25" data-mode="tread"':'min="0" max="100" data-mode="score"';
+  const cfg=getMeasureConfig(pt);
+  const mm=Number(s.measureMm??measureDefaults[pt]??5.5);
+  const sliderValue=cfg?fmtMm(mm):s.score;
+  const fillWidth=cfg?mmToScore(mm,cfg.max):s.score;
+  const sliderLabel=cfg?cfg.label:'Level';
+  const sliderDisplay=cfg?fmtMm(mm)+' mm':s.score+'%';
+  const ringHTML=cfg?mmMeasureRingHTML(mm,cfg):scoreRingHTML(s.score,s.status);
+  const rangeClass=cfg?cfg.status(mm):s.status.toLowerCase();
+  const rangeAttrs=cfg?`min="0" max="${cfg.max}" step="${cfg.step}" data-mode="measure"`:'min="0" max="100" data-mode="score"';
+  const boxClass=cfg?'measure-mm-box'+(cfg.disc?' disc-measure':''):'';
+  const scaleHTML=cfg?`<div class="measure-scale">${cfg.scale.map(l=>`<span>${l}</span>`).join('')}</div>`:'';
   return`<div class="card status-${s.status.toLowerCase()}" data-pt="${encodeURIComponent(pt)}" style="animation-delay:${idx*0.04}s">
     <div class="card-head">
       <div class="point">
@@ -2493,13 +2588,13 @@ function buildCardHTML(pt,c,s,idx){
       </div>
       ${ringHTML}
     </div>
-    <div class="slider-box ${tyreDepth?'tyre-depth-box':''}">
+    <div class="slider-box ${boxClass}">
       <div class="slider-label"><span>${sliderLabel}</span><span class="slider-pct">${sliderDisplay}</span></div>
       <div class="range-wrap ${rangeClass}">
         <div class="range-fill" style="width:${fillWidth}%"></div>
         <input class="range" type="range" ${rangeAttrs} value="${sliderValue}">
       </div>
-      ${tyreDepth?`<div class="tread-scale"><span>0 mm</span><span>3 mm</span><span>6 mm</span><span>9 mm</span><span>12 mm</span></div>`:''}
+      ${scaleHTML}
     </div>
     <div class="status-title">Condition Status</div>
     <div class="radios">${statusRadiosHTML(s)}</div>
@@ -2507,31 +2602,33 @@ function buildCardHTML(pt,c,s,idx){
       <button type="button" class="btn notes ${s.notes?'active':''}" data-action="notes">Comments</button>
       <button type="button" class="btn photo ${s.photosOpen?'active':''}" data-action="photos">Photos${s.photos.length?`<span class="badge">${s.photos.length}</span>`:''}</button>
     </div>
-    <div class="note-area" style="display:${s.notes?'block':'none'}">
-      <textarea placeholder="Add inspection comments for ${pt}...">${s.noteText||''}</textarea>
+    <div class="note-editor" style="display:${s.notes?'block':'none'}">
+      <textarea placeholder="Add inspection comments for ${pt}...">${s.notes?(s.noteText||''):''}</textarea>
+      <button type="button" class="note-save" data-action="save-comment">Save Comment</button>
     </div>
+    <div class="saved-comment" style="display:${!s.notes&&s.noteText?'block':'none'}">${s.noteText?escHtml(s.noteText):''}</div>
     <div class="card-extra">${!s.photosOpen&&s.photos.length?renderMiniGallery(pt):''}${s.photosOpen?renderPhotoPanel(pt):''}</div>
   </div>`;
 }
 
 function updateCardScore(pt,score){
   const card=getCard(pt);if(!card)return;
-  const isTread=isTyreDepthPoint(pt);
-  const display=isTread?fmtMm(score)+' mm':score+'%';
-  const pct=isTread?(Number(score)/12*100):score;
+  const cfg=getMeasureConfig(pt);
+  const display=cfg?fmtMm(score)+' mm':score+'%';
+  const pct=cfg?mmToScore(score,cfg.max):score;
   card.querySelector('.slider-pct').textContent=display;
   card.querySelector('.range-fill').style.width=pct+'%';
   const ringFill=card.querySelector('.score-ring .circ-fill');
   if(ringFill)setCircFill(ringFill,30,pct);
   const ringText=card.querySelector('.score-ring .circ-text b');
-  if(ringText)ringText.textContent=isTread?fmtMm(score):score+'%';
+  if(ringText)ringText.textContent=cfg?fmtMm(score):score+'%';
   const ringSmall=card.querySelector('.score-ring .circ-text small');
-  if(ringSmall&&isTread)ringSmall.textContent='mm';
-  if(isTread){
-    const st=rangeStatusByDepth(score);
+  if(ringSmall&&cfg)ringSmall.textContent='mm';
+  if(cfg){
+    const st=cfg.status(score);
     card.querySelector('.range-wrap').className='range-wrap '+st;
     const ring=card.querySelector('.score-ring');
-    if(ring)ring.className='score-ring '+st+' tyre-depth-ring';
+    if(ring)ring.className='score-ring '+st+' measure-mm-ring';
   }
 }
 
@@ -2539,13 +2636,14 @@ function updateCardStatus(pt){
   const card=getCard(pt);if(!card)return;
   const s=state[pt];
   const st=s.status.toLowerCase();
+  const cfg=getMeasureConfig(pt);
   card.className='card status-'+st;
-  if(isTyreDepthPoint(pt)){
-    const depth=Number(s.treadDepth ?? 5.5);
-    const depthSt=rangeStatusByDepth(depth);
+  if(cfg){
+    const mm=Number(s.measureMm??measureDefaults[pt]??5.5);
+    const depthSt=cfg.status(mm);
     card.querySelector('.range-wrap').className='range-wrap '+depthSt;
     const ring=card.querySelector('.score-ring');
-    if(ring)ring.className='score-ring '+depthSt+' tyre-depth-ring';
+    if(ring)ring.className='score-ring '+depthSt+' measure-mm-ring';
   }else{
     card.querySelector('.range-wrap').className='range-wrap '+st;
     const ring=card.querySelector('.score-ring');
@@ -2556,11 +2654,38 @@ function updateCardStatus(pt){
   });
 }
 
+function updateSaveBtnVisibility(pt){
+  const card=getCard(pt);if(!card)return;
+  const s=state[pt];
+  const saveBtn=card.querySelector('.note-save');
+  if(!saveBtn)return;
+  if(!s.notes){saveBtn.style.display='none';return;}
+  const ta=card.querySelector('.note-editor textarea');
+  saveBtn.style.display=(ta&&ta.value.trim())?'block':'none';
+}
+
 function updateCardNotes(pt){
   const card=getCard(pt);if(!card)return;
   const s=state[pt];
-  card.querySelector('.note-area').style.display=s.notes?'block':'none';
+  const editor=card.querySelector('.note-editor');
+  const saved=card.querySelector('.saved-comment');
+  if(editor)editor.style.display=s.notes?'block':'none';
   card.querySelector('.btn.notes').classList.toggle('active',s.notes);
+  if(saved){
+    saved.style.display=(!s.notes&&s.noteText)?'block':'none';
+    saved.textContent=s.noteText||'';
+  }
+  updateSaveBtnVisibility(pt);
+}
+
+function saveComment(pt){
+  const card=getCard(pt);if(!card)return;
+  const ta=card.querySelector('.note-editor textarea');
+  const text=ta?ta.value.trim():'';
+  if(!text){showToast('Please enter a comment');return;}
+  state[pt].noteText=text;
+  state[pt].notes=false;
+  updateCardNotes(pt);
 }
 
 function updatePhotoBtn(pt){
@@ -2681,9 +2806,10 @@ cardsEl.addEventListener('input',e=>{
   const pt=getPt(card);
   if(e.target.classList.contains('range')){
     const v=+e.target.value;
-    if(e.target.dataset.mode==='tread'){
-      state[pt].treadDepth=v;
-      state[pt].score=treadToScore(v);
+    if(e.target.dataset.mode==='measure'){
+      const cfg=getMeasureConfig(pt);
+      state[pt].measureMm=v;
+      state[pt].score=mmToScore(v,cfg.max);
       updateCardScore(pt,v);
     }else{
       state[pt].score=v;
@@ -2692,7 +2818,7 @@ cardsEl.addEventListener('input',e=>{
     updateSummary();
   }
   if(e.target.tagName==='TEXTAREA'){
-    state[pt].noteText=e.target.value;
+    updateSaveBtnVisibility(pt);
   }
 });
 
@@ -2704,7 +2830,15 @@ cardsEl.addEventListener('click',e=>{
   if(radio){state[pt].status=radio.dataset.status;updateCardStatus(pt);updateSummary();return}
   const action=e.target.closest('[data-action]');
   if(action){
-    if(action.dataset.action==='notes'){state[pt].notes=!state[pt].notes;updateCardNotes(pt)}
+    if(action.dataset.action==='notes'){
+      state[pt].notes=!state[pt].notes;
+      if(state[pt].notes){
+        const ta=card.querySelector('.note-editor textarea');
+        if(ta)ta.value=state[pt].noteText||'';
+      }
+      updateCardNotes(pt);
+    }
+    if(action.dataset.action==='save-comment'){saveComment(pt);return}
     if(action.dataset.action==='photos'){state[pt].photosOpen=!state[pt].photosOpen;updateCardPhotos(pt)}
     return;
   }
@@ -2719,7 +2853,7 @@ cardsEl.addEventListener('click',e=>{
 
 function updateScore(p,v){state[p].score=+v;updateCardScore(p,v);updateSummary()}
 function setStatus(p,v){state[p].status=v;updateCardStatus(p);updateSummary()}
-function toggleNotes(p){state[p].notes=!state[p].notes;updateCardNotes(p)}
+function toggleNotes(p){state[p].notes=!state[p].notes;if(state[p].notes){const c=getCard(p);const ta=c&&c.querySelector('.note-editor textarea');if(ta)ta.value=state[p].noteText||'';}updateCardNotes(p)}
 function nextCat(){current=Math.min(categories.length-1,current+1);renderCategory()}
 function prevCat(){current=Math.max(0,current-1);renderCategory()}
 document.getElementById('search').oninput=renderCats;
