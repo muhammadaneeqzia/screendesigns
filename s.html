@@ -24,9 +24,9 @@
   --good: #10B981;
   --good-bg: #ECFDF5;
   --good-border: #6EE7B7;
-  --fair: #FF9F0B;
-  --fair-bg: #FFF7ED;
-  --fair-border: #FDBA74;
+  --fair: #3B82F6;
+  --fair-bg: #EFF6FF;
+  --fair-border: #93C5FD;
   --poor: #EF4444;
   --poor-bg: #FEF2F2;
   --poor-border: #FCA5A5;
@@ -46,7 +46,33 @@ body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   color: var(--text);
   min-height: 100vh;
-  background: #F4F6F9;
+  background:
+    radial-gradient(ellipse 80% 50% at 0% -10%, rgba(59, 130, 246, 0.22), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(96, 165, 250, 0.15), transparent),
+    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(191, 219, 254, 0.35), transparent),
+    linear-gradient(180deg, #F0F7FF 0%, #F8FAFC 40%, #EEF4FF 100%);
+  background-attachment: fixed;
+}
+
+/* Ambient orbs */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  width: 420px; height: 420px;
+  top: -120px; right: -80px;
+  background: rgba(59, 130, 246, 0.18);
+}
+body::after {
+  width: 320px; height: 320px;
+  bottom: -60px; left: -60px;
+  background: rgba(147, 197, 253, 0.25);
 }
 
 .app {
@@ -57,7 +83,7 @@ body {
   padding: 20px 24px 40px;
 }
 
-/* ── Vehicle header ── */
+/* ── Header ── */
 .top {
   position: sticky;
   top: 0;
@@ -66,243 +92,369 @@ body {
   margin: 0 -24px;
   padding-left: 24px;
   padding-right: 24px;
+  /* background: #F0F7FF; */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(191, 223, 255, 0.45);
 }
 
-.vehicle-header {
+.hero {
   position: relative;
   overflow: hidden;
-  border-radius: 22px;
-  border: 1.5px solid rgba(96, 155, 255, 0.42);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.78) 0%, rgba(236, 246, 255, 0.72) 38%, rgba(214, 232, 255, 0.68) 100%);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.65) inset,
-    0 0 28px rgba(59, 130, 246, 0.14),
-    0 10px 40px rgba(37, 99, 235, 0.08);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 28px 32px;
+  border-radius: var(--radius-xl);
+  color: #fff;
+  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 40%, #60A5FA 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.vehicle-header-shine {
+.hero::before {
+  content: '';
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(112deg, transparent 30%, rgba(255, 255, 255, 0.72) 48%, transparent 66%),
-    radial-gradient(circle at 92% 12%, rgba(147, 197, 253, 0.28), transparent 38%),
-    radial-gradient(circle at 8% 88%, rgba(191, 219, 254, 0.18), transparent 32%);
+    radial-gradient(circle at 85% 15%, rgba(255,255,255,0.28) 0%, transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(255,255,255,0.08) 0%, transparent 40%);
   pointer-events: none;
 }
 
-.vehicle-header-inner {
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(135deg, transparent 30%, black 100%);
+  pointer-events: none;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 18px 22px;
 }
 
-.vh-glass-tile {
-  flex-shrink: 0;
-  border-radius: 16px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(241, 248, 255, 0.58) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.92);
-  box-shadow:
-    0 0 0 1px rgba(147, 197, 253, 0.38) inset,
-    0 10px 28px rgba(59, 130, 246, 0.11),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-.vehicle-logo-wrap {
-  display: flex;
-  align-items: center;
-  padding-right: 22px;
-  margin-right: 22px;
-  border-right: 1px solid rgba(120, 170, 255, 0.28);
-}
-
-.vehicle-logo-box {
-  width: 108px;
-  height: 108px;
-  padding: 14px;
+.logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
+  font-size: 26px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  animation: logoPulse 3s ease-in-out infinite;
 }
 
-.vehicle-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  filter: drop-shadow(0 2px 6px rgba(15, 23, 42, 0.08));
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.3); }
+  50% { box-shadow: 0 8px 32px rgba(255,255,255,0.2), inset 0 1px 0 rgba(255,255,255,0.4); }
 }
 
-.vehicle-info {
-  flex: 1;
-  min-width: 0;
-  padding-right: 18px;
-}
-
-.vehicle-info h1 {
-  font-size: clamp(26px, 2.6vw, 36px);
+.hero h1 {
+  font-size: clamp(22px, 3vw, 32px);
   font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
-  color: #062A52;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
-.vehicle-model {
-  margin-top: 10px;
-  font-size: 16px;
-  line-height: 1.45;
-  color: #5A8EC8;
-  font-weight: 500;
-}
-
-.vehicle-model strong {
-  font-weight: 800;
-  color: #062A52;
-}
-
-.vehicle-vin {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  margin-top: 14px;
+.hero p {
+  margin-top: 8px;
   font-size: 14px;
-  font-weight: 600;
-  color: #1E56D9;
-  letter-spacing: 0.01em;
+  font-weight: 500;
+  opacity: 0.88;
+  max-width: 520px;
+  line-height: 1.55;
 }
 
-.vehicle-vin span {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.vehicle-vin svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  color: #3B82F6;
-}
-
-.vehicle-health {
-  width: 136px;
-  padding: 14px 12px 12px;
+.health {
+  position: relative;
+  text-align: center;
+  min-width: 130px;
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
 
-.vehicle-health small {
-  font-size: 9px;
+.health small {
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #062A52;
-  line-height: 1;
+  letter-spacing: 0.14em;
+  opacity: 0.9;
 }
 
-.vehicle-health-ring {
+.circ {
   position: relative;
-  width: 96px;
-  height: 96px;
+  display: grid;
+  place-items: center;
 }
 
-.vehicle-health-ring svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-  filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.22));
-}
+.circ svg { display: block; transform: rotate(-90deg); }
 
-.vhr-bg {
-  fill: none;
-  stroke: #C8DFFB;
-  stroke-width: 8;
-}
+.circ-bg { fill: none; stroke-width: 6; stroke-linecap: round; }
+.circ-fill { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-.vhr-fill {
-  fill: none;
-  stroke: url(#vhrGrad);
-  stroke-width: 8;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
+.health .circ { width: 92px; height: 92px; }
+.health .circ-bg { stroke: rgba(255, 255, 255, 0.25); }
+.health .circ-fill { stroke: #fff; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); }
 
-.vhr-pct {
+.circ-text {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  font-size: 24px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.04em;
-  color: #062A52;
+}
+
+.health .circ-text {
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* ── Layout ── */
 .wizard {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 22px;
   margin-top: 4px;
+  transition: grid-template-columns 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  align-items: start;
 }
 
-/* ── Category labels above progress bar ── */
-.progress-cats {
-  margin: 8px 0 12px;
+.wizard.sidebar-collapsed {
+  grid-template-columns: 76px 1fr;
 }
 
-.progress-cats .cat-list,
-.progress-cats .timeline {
+/* ── Sidebar ── */
+.side {
+  position: sticky;
+  top: 158px;
+  align-self: start;
+  z-index: 20;
+  max-height: calc(100vh - 178px);
+  height: calc(100vh - 178px);
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 2px 0 4px;
-  scrollbar-width: none;
-}
-
-.progress-cats .cat-list::-webkit-scrollbar,
-.progress-cats .timeline::-webkit-scrollbar { display: none; }
-
-.progress-cats .cat {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  padding: 5px 10px;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--surface) 0%, rgba(239, 246, 255, 0.75) 100%);
+  backdrop-filter: blur(28px);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  border: 1px solid transparent;
-  background: transparent;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.side.collapsed .side-header h3,
+.side.collapsed .search,
+.side.collapsed .cat-name {
+  display: none;
+}
+
+.side.collapsed .side-header-top {
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.side.collapsed .cat {
+  justify-content: center;
+  padding: 12px 8px;
+}
+
+.side.collapsed .cat.active::before {
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+}
+
+.side::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #60A5FA, var(--primary));
+  opacity: 0.7;
+}
+
+.side-header {
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid rgba(219, 234, 254, 0.8);
+  flex-shrink: 0;
+}
+
+.side-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.side-header h3 {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--muted);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: var(--transition);
+  margin-bottom: 0;
 }
 
-.progress-cats .cat:hover {
+.side-toggle {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: #fff;
   color: var(--primary-dark);
-  background: rgba(239, 246, 255, 0.7);
-}
-
-.progress-cats .cat.done {
-  color: var(--good);
-}
-
-.progress-cats .cat.active {
-  color: var(--primary-deep);
-  background: linear-gradient(135deg, #DBEAFE, #EFF6FF);
-  border-color: #93C5FD;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: var(--transition);
   box-shadow: var(--shadow-sm);
 }
 
-.progress-cats .cat.active::before,
-.progress-cats .cat.active::after {
-  display: none;
+.side-toggle:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.side.collapsed .side-toggle {
+  transform: rotate(180deg);
+}
+
+.side.collapsed .side-toggle:hover {
+  transform: rotate(180deg) scale(1.05);
+}
+
+.search {
+  position: relative;
+}
+
+.search::before {
+  content: '⌕';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.search input {
+  width: 100%;
+  padding: 13px 14px 13px 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-elevated);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: var(--transition);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.search input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.cat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-light) transparent;
+}
+
+.cat-list::-webkit-scrollbar { width: 5px; }
+.cat-list::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 10px;
+}
+
+.cat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 14px;
+  margin-bottom: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.cat:hover {
+  background: rgba(239, 246, 255, 0.9);
+  transform: translateX(3px);
+}
+
+.cat.active {
+  background: linear-gradient(135deg, #DBEAFE, #EFF6FF);
+  border-color: #93C5FD;
+  color: var(--primary-deep);
+  box-shadow: var(--shadow-sm);
+}
+
+.cat.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  border-radius: 0 6px 6px 0;
+  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+}
+
+.tick {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 14px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-light);
+  color: var(--primary-dark);
+  transition: var(--transition);
+}
+
+.cat.done .tick {
+  background: var(--good);
+  border-color: #34D399;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
 }
 
 /* ── Main content ── */
@@ -312,16 +464,22 @@ body {
 .stepbar {
   position: relative;
   overflow: hidden;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(239,246,255,0.88));
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(147, 197, 253, 0.65);
   border-radius: var(--radius-xl);
   padding: 26px 28px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
 .stepbar::before {
-  display: none;
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(59,130,246,0.08), transparent 70%);
+  pointer-events: none;
 }
 
 .stepbar-inner {
@@ -470,9 +628,6 @@ body {
   border-radius: 999px;
   overflow: visible;
   box-shadow: inset 0 2px 6px rgba(37, 99, 235, 0.1);
-  cursor: pointer;
-  touch-action: none;
-  user-select: none;
 }
 
 .progress {
@@ -514,19 +669,7 @@ body {
   border: 3px solid var(--primary);
   box-shadow: 0 4px 14px var(--primary-glow);
   transition: left 0.55s cubic-bezier(0.34, 1.2, 0.64, 1);
-  pointer-events: auto;
-  cursor: grab;
-  z-index: 2;
-}
-
-body.progress-dragging .progress span,
-body.progress-dragging .progress-thumb {
-  transition: none !important;
-}
-
-body.progress-dragging .progress-thumb {
-  cursor: grabbing;
-  transform: scale(1.08);
+  pointer-events: none;
 }
 
 .progress-steps {
@@ -539,14 +682,9 @@ body.progress-dragging .progress-thumb {
 .progress-dot {
   width: 8px;
   height: 8px;
-  padding: 0;
-  border: none;
   border-radius: 50%;
   background: #CBD5E1;
   transition: var(--transition);
-  cursor: pointer;
-  flex-shrink: 0;
-  appearance: none;
 }
 
 .progress-dot.done {
@@ -641,6 +779,11 @@ body.progress-dragging .progress-thumb {
 .step-stat.stat-poor .step-stat-val { color: #DC2626; }
 .step-stat.stat-poor .step-stat-pct { background: rgba(239,68,68,0.12); color: #DC2626; }
 
+@media (max-width: 768px) {
+  .step-stats { grid-template-columns: repeat(2, 1fr); }
+  .step-stat-val { font-size: 22px; }
+}
+
 /* ── Cards ── */
 .cards {
   display: grid;
@@ -679,7 +822,7 @@ body.progress-dragging .progress-thumb {
 }
 
 .card.status-good::before { background: linear-gradient(90deg, #10B981, #34D399); }
-.card.status-fair::before { background: linear-gradient(90deg, #FFB84D, #FF9F0B); }
+.card.status-fair::before { background: linear-gradient(90deg, #3B82F6, #60A5FA); }
 .card.status-poor::before { background: linear-gradient(90deg, #EF4444, #F87171); }
 
 .card::after {
@@ -744,28 +887,21 @@ body.progress-dragging .progress-thumb {
 .score-ring { flex-shrink: 0; }
 
 .score-ring .circ {
-  position: relative;
   width: 76px;
   height: 76px;
-}
-
-.score-ring .circ svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
+  filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.15));
 }
 
 .score-ring .circ-inner { fill: #F8FAFC; }
 .score-ring.good .circ-inner { fill: #ECFDF5; }
-.score-ring.fair .circ-inner { fill: #FFF7ED; }
+.score-ring.fair .circ-inner { fill: #EFF6FF; }
 .score-ring.poor .circ-inner { fill: #FEF2F2; }
 
 .score-ring .circ-bg { fill: none; stroke: #E2E8F0; stroke-width: 6; }
 .score-ring .circ-fill { fill: none; stroke-width: 6; stroke-linecap: round; stroke: var(--primary); transition: stroke-dashoffset 0.4s ease; }
-.score-ring.good .circ-fill { stroke: var(--good); }
-.score-ring.fair .circ-fill { stroke: var(--fair); }
-.score-ring.poor .circ-fill { stroke: var(--poor); }
+.score-ring.good .circ-fill { stroke: var(--good); filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.35)); }
+.score-ring.fair .circ-fill { stroke: var(--fair); filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.35)); }
+.score-ring.poor .circ-fill { stroke: var(--poor); filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.35)); }
 
 .score-ring .circ-text {
   position: absolute;
@@ -775,25 +911,19 @@ body.progress-dragging .progress-thumb {
   align-items: center;
   justify-content: center;
   gap: 1px;
-  z-index: 2;
-  pointer-events: none;
 }
 
-.score-ring .circ-text b,
-.score-ring .circ-text .score-pct {
+.score-ring .circ-text b {
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1;
   color: var(--primary-dark);
 }
 
-.score-ring.good .circ-text b,
-.score-ring.good .circ-text .score-pct { color: #047857; }
-.score-ring.fair .circ-text b,
-.score-ring.fair .circ-text .score-pct { color: #C2410C; }
-.score-ring.poor .circ-text b,
-.score-ring.poor .circ-text .score-pct { color: #DC2626; }
+.score-ring.good .circ-text b { color: #047857; }
+.score-ring.fair .circ-text b { color: #2563EB; }
+.score-ring.poor .circ-text b { color: #DC2626; }
 
 .score-ring .circ-text small {
   font-size: 8px;
@@ -857,7 +987,7 @@ body.progress-dragging .progress-thumb {
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
   overflow: hidden;
-  box-shadow: none;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
 }
 
 .range-fill::after {
@@ -868,9 +998,9 @@ body.progress-dragging .progress-thumb {
   animation: shimmer 2s infinite;
 }
 
-.range-wrap.good .range-fill { background: linear-gradient(90deg, #6EE7B7, var(--good)); box-shadow: none; }
-.range-wrap.fair .range-fill { background: linear-gradient(90deg, #FCD34D, var(--fair)); box-shadow: none; }
-.range-wrap.poor .range-fill { background: linear-gradient(90deg, #FCA5A5, var(--poor)); box-shadow: none; }
+.range-wrap.good .range-fill { background: linear-gradient(90deg, #6EE7B7, var(--good)); box-shadow: 0 0 12px rgba(16, 185, 129, 0.25); }
+.range-wrap.fair .range-fill { background: linear-gradient(90deg, #93C5FD, var(--fair)); box-shadow: 0 0 12px rgba(59, 130, 246, 0.25); }
+.range-wrap.poor .range-fill { background: linear-gradient(90deg, #FCA5A5, var(--poor)); box-shadow: 0 0 12px rgba(239, 68, 68, 0.25); }
 
 .slider-label {
   display: flex;
@@ -916,9 +1046,9 @@ body.progress-dragging .progress-thumb {
   transition: transform 0.15s;
 }
 
-.range-wrap.good .range::-webkit-slider-thumb { border-color: var(--good); box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12); }
-.range-wrap.fair .range::-webkit-slider-thumb { border-color: var(--fair); box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12); }
-.range-wrap.poor .range::-webkit-slider-thumb { border-color: var(--poor); box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12); }
+.range-wrap.good .range::-webkit-slider-thumb { border-color: var(--good); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35); }
+.range-wrap.fair .range::-webkit-slider-thumb { border-color: var(--fair); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35); }
+.range-wrap.poor .range::-webkit-slider-thumb { border-color: var(--poor); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35); }
 
 .range::-webkit-slider-thumb:hover {
   transform: scale(1.12);
@@ -941,33 +1071,26 @@ body.progress-dragging .progress-thumb {
   cursor: grab;
 }
 
-.tyre-depth-box,
-.measure-mm-box {
+.tyre-depth-box {
   background: linear-gradient(135deg, #F8FAFC, #EEF6FF 50%, #ECFDF5);
 }
-.tyre-depth-box .range-wrap::before,
-.measure-mm-box .range-wrap::before {
+.tyre-depth-box .range-wrap::before {
   height: 14px;
   background: repeating-linear-gradient(90deg, #E2E8F0 0, #E2E8F0 calc(100% / 48 - 1px), #CBD5E1 calc(100% / 48 - 1px), #CBD5E1 calc(100% / 48));
 }
-.measure-mm-box.disc-measure .range-wrap::before {
-  background: repeating-linear-gradient(90deg, #E2E8F0 0, #E2E8F0 calc(100% / 40 - 1px), #CBD5E1 calc(100% / 40 - 1px), #CBD5E1 calc(100% / 40));
+.tyre-depth-box .range-fill {
+  height: 14px;
 }
-.tyre-depth-box .range-fill,
-.measure-mm-box .range-fill { height: 14px; }
-.tyre-depth-box .range::-webkit-slider-thumb,
-.measure-mm-box .range::-webkit-slider-thumb {
+.tyre-depth-box .range::-webkit-slider-thumb {
   width: 26px;
   height: 26px;
   margin-top: -6px;
 }
-.tyre-depth-box .range::-moz-range-thumb,
-.measure-mm-box .range::-moz-range-thumb {
+.tyre-depth-box .range::-moz-range-thumb {
   width: 26px;
   height: 26px;
 }
-.tread-scale,
-.measure-scale {
+.tread-scale {
   display: flex;
   justify-content: space-between;
   margin-top: 8px;
@@ -975,16 +1098,12 @@ body.progress-dragging .progress-thumb {
   font-weight: 800;
   color: var(--muted);
 }
-.tyre-depth-ring .circ-text b,
-.tyre-depth-ring .circ-text .score-pct,
-.measure-mm-ring .circ-text b,
-.measure-mm-ring .circ-text .score-pct {
+.tyre-depth-ring .circ-text b {
   font-size: 15px;
 }
 
 /* ── Status radios ── */
-.status-title,
-.status-label {
+.status-title {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -993,109 +1112,84 @@ body.progress-dragging .progress-thumb {
   margin-bottom: 10px;
 }
 
-.radios,
-.segmented {
-  display: flex;
-  flex-wrap: nowrap;
+.radios {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
 }
 
-.radios::-webkit-scrollbar,
-.segmented::-webkit-scrollbar { display: none; }
-
-.radio,
-.seg {
-  flex: 1 0 auto;
-  min-width: 72px;
-  height: 44px;
-  padding: 0 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(191, 219, 254, 0.95);
-  background: linear-gradient(180deg, #FFFFFF 0%, #F0F7FF 100%);
-  font-size: 15px;
-  font-weight: 600;
-  color: #334155;
+.radio {
+  padding: 12px 10px;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid #E2E8F0;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.08);
-  display: inline-flex;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-family: inherit;
-  white-space: nowrap;
 }
 
-.radio:hover:not(.active),
-.seg:hover:not(.active) {
-  background: linear-gradient(180deg, #FFFFFF 0%, #E3F0FF 100%);
-  border-color: #BFDBFE;
+.radio:hover { transform: translateY(-2px); border-color: #CBD5E1; }
+
+.radio.poor.active {
+  background: var(--poor-bg);
+  border-color: var(--poor-border);
+  color: #B91C1C;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.15);
 }
 
-.radio .status-icon,
-.seg .status-icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
+.radio.fair.active {
+  background: var(--fair-bg);
+  border-color: var(--fair-border);
+  color: #2563EB;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.15);
 }
 
-.radio .status-icon svg,
-.seg .status-icon svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
-.radio.poor.active,
-.seg.poor.active {
-  background: linear-gradient(135deg, #FF7A7A 0%, #FF4444 48%, #E83333 100%);
-  border-color: #FF4444;
-  color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
-}
-
-.radio.fair.active,
-.seg.fair.active {
-  background: linear-gradient(135deg, #FFB84D 0%, #FF9F0B 48%, #F08C00 100%);
-  border-color: #FF9F0B;
-  color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
-}
-
-.radio.good.active,
-.seg.good.active {
-  background: linear-gradient(135deg, #34D399 0%, #10B981 48%, #059669 100%);
-  border-color: #10B981;
-  color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+.radio.good.active {
+  background: var(--good-bg);
+  border-color: var(--good-border);
+  color: #047857;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
 }
 
 /* ── Actions ── */
 .actions {
   display: flex;
+  align-items: center;
   gap: 10px;
   margin-top: 16px;
-  position: relative;
-  z-index: 3;
+}
+.btn-mic {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22C55E, #16A34A);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.22), 0 8px 20px rgba(34, 197, 94, 0.32);
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
-.card-extra {
-  margin-top: 4px;
-  position: relative;
-  z-index: 3;
+.btn-mic:hover { transform: scale(1.06); }
+
+.btn-mic.listening {
+  animation: micPulse 1.2s ease-in-out infinite;
 }
 
-.note-editor {
-  margin-top: 14px;
-  position: relative;
-  z-index: 3;
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.22), 0 8px 20px rgba(34, 197, 94, 0.32); }
+  50% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0.12), 0 8px 24px rgba(34, 197, 94, 0.42); }
 }
+
 
 .btn {
   flex: 1;
@@ -1136,7 +1230,9 @@ body.progress-dragging .progress-thumb {
   box-shadow: 0 10px 28px rgba(37, 99, 235, 0.38);
 }
 
-.note-editor textarea {
+.note-area { margin-top: 14px; }
+
+.note-area textarea {
   width: 100%;
   min-height: 88px;
   padding: 14px 16px;
@@ -1153,7 +1249,7 @@ body.progress-dragging .progress-thumb {
   line-height: 1.5;
 }
 
-.note-editor textarea:focus {
+.note-area textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
 }
@@ -1162,16 +1258,16 @@ body.progress-dragging .progress-thumb {
   display: none;
   width: 100%;
   margin-top: 10px;
-  padding: 12px 14px;
+  padding: 11px 14px;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.22);
   transition: var(--transition);
 }
 
@@ -1180,7 +1276,7 @@ body.progress-dragging .progress-thumb {
 .saved-comment {
   margin-top: 12px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--primary-soft);
   border: 1px solid var(--primary-light);
   font-size: 13px;
@@ -1188,8 +1284,6 @@ body.progress-dragging .progress-thumb {
   color: var(--text-secondary);
   white-space: pre-wrap;
   word-break: break-word;
-  position: relative;
-  z-index: 3;
 }
 
 .saved-comment::before {
@@ -1806,6 +1900,12 @@ body.progress-dragging .progress-thumb {
   cursor: pointer;
 }
 
+@media (max-width: 768px) {
+  .lb-prev { left: 8px; }
+  .lb-next { right: 8px; }
+  .lb-close { top: 12px; right: 12px; }
+}
+
 /* ── Navigation Dock ── */
 .nav-dock {
   position: sticky;
@@ -1822,9 +1922,10 @@ body.progress-dragging .progress-thumb {
   gap: 16px;
   padding: 14px 18px;
   border-radius: var(--radius-xl);
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(147, 197, 253, 0.65);
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
 }
 
 .nav-dock button {
@@ -1878,437 +1979,574 @@ body.progress-dragging .progress-thumb {
 }
 
 /* ── Responsive ── */
-@media (max-width: 1200px) {
-  .app { padding: 18px 20px 36px; }
-  .cards { gap: 16px; }
-}
-
 @media (max-width: 1024px) {
-  .cards { grid-template-columns: 1fr; }
-  .progress-cats .cat-list { padding-bottom: 8px; }
-  .stepbar { padding: 22px 24px; }
+  .wizard { grid-template-columns: 1fr; }
+  .wizard.sidebar-collapsed { grid-template-columns: 1fr; }
+  .side-toggle { display: none; }
+  .side.collapsed .side-header h3,
+  .side.collapsed .search,
+  .side.collapsed .cat-name { display: block; }
+  .side.collapsed .cat { justify-content: flex-start; padding: 14px 12px; }
+  .side {
+    position: relative;
+    top: auto;
+    height: auto;
+    max-height: 280px;
+  }
+  .cat-list {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 12px;
+  }
+  .cat { white-space: nowrap; flex-shrink: 0; }
 }
 
 @media (max-width: 768px) {
-  .app {
-    padding: 14px 16px calc(96px + env(safe-area-inset-bottom, 0px));
-  }
-
+  .app { padding: 14px 16px 32px; }
   .top {
-    top: env(safe-area-inset-top, 0px);
     margin: 0 -16px;
-    padding: 6px 16px 14px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
-
-  .vehicle-header { border-radius: 16px; }
-
-  .vehicle-header-inner {
-    display: grid;
-    grid-template-columns: 72px minmax(0, 1fr) auto;
-    grid-template-areas: "logo info health";
-    align-items: center;
-    gap: 10px 12px;
-    padding: 12px;
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 22px 20px;
   }
-
-  .vehicle-logo-wrap {
-    grid-area: logo;
-    margin: 0;
-    padding: 0;
-    border-right: none;
-    justify-content: flex-start;
-  }
-
-  .vehicle-logo-box {
-    width: 72px;
-    height: 72px;
-    padding: 8px;
-    border-radius: 14px;
-  }
-
-  .vehicle-info {
-    grid-area: info;
-    padding-right: 0;
-    text-align: left;
-    min-width: 0;
-  }
-
-  .vehicle-info h1 {
-    font-size: clamp(16px, 4.2vw, 21px);
-    line-height: 1.12;
-  }
-
-  .vehicle-model {
-    margin-top: 4px;
-    font-size: 12px;
-    line-height: 1.35;
-  }
-
-  .vehicle-vin {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    margin-top: 6px;
-    font-size: 10px;
-    gap: 5px;
-    max-width: 100%;
-  }
-
-  .vehicle-vin svg {
-    width: 14px;
-    height: 14px;
-    margin-top: 1px;
-    flex-shrink: 0;
-  }
-
-  .vehicle-vin span {
-    max-width: 100%;
-    text-align: left;
-    line-height: 1.35;
-  }
-
-  .vehicle-health {
-    grid-area: health;
-    width: auto;
-    max-width: none;
-    margin: 0;
-    padding: 8px 6px 6px;
-    border-radius: 14px;
-    align-self: center;
-  }
-
-  .vehicle-health small {
-    font-size: 7px;
-    letter-spacing: 0.1em;
-  }
-
-  .vehicle-health-ring {
-    width: 68px;
-    height: 68px;
-    margin: 0 auto;
-  }
-
-  .vehicle-health-ring svg {
-    width: 68px;
-    height: 68px;
-  }
-
-  .vhr-pct { font-size: 17px; }
-
-  .stepbar {
-    padding: 18px 16px;
-    border-radius: var(--radius-lg);
-    margin-bottom: 16px;
-  }
-
-  .stepbar-inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-  }
-
-  .step-left { width: 100%; }
-  .step-title h2 { font-size: clamp(20px, 5vw, 26px); }
-
-  .step-badge-wrap {
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .progress-wrap { margin-top: 14px; }
-  .progress-header { margin-bottom: 10px; }
+  .health { width: 100%; }
+  .stepbar { padding: 20px 18px; }
+  .stepbar-inner { flex-direction: column; align-items: flex-start; }
+  .step-badge-wrap { flex-direction: row; width: 100%; justify-content: space-between; }
   .progress-pct { font-size: 22px; }
   .progress-steps { display: none; }
-  .progress-cats .cat { font-size: 11px; padding: 4px 8px; }
-
-  .step-stats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-top: 14px;
-  }
-
-  .step-stat { padding: 10px 8px; }
-  .step-stat-val { font-size: 22px; }
-
-  .cards {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .card {
-    padding: 18px 16px 16px;
-    border-radius: var(--radius-md);
-  }
-
-  .card:hover { transform: none; }
-
-  .card-head { gap: 10px; align-items: flex-start; }
-  .point h3 { font-size: 14px; }
-
-  .score-ring .circ {
-    width: 68px;
-    height: 68px;
-  }
-
-  .score-ring .circ svg {
-    width: 68px;
-    height: 68px;
-  }
-
-  .score-ring .circ-text b,
-  .score-ring .circ-text .score-pct { font-size: 15px; }
-
-  .slider-box {
-    padding: 14px;
-    margin: 16px 0 14px;
-  }
-
-  .radio,
-  .seg {
-    min-width: 68px;
-    height: 40px;
-    font-size: 13px;
-    padding: 0 12px;
-  }
-
-  .actions { gap: 8px; }
-
-  .btn {
-    padding: 11px 10px;
-    font-size: 12px;
-  }
-
-  .upload-btns {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .upload-btn { width: 100%; }
-
-  .thumb-wrap,
-  .thumb-add {
-    flex: 0 0 104px;
-    width: 104px;
-    height: 104px;
-  }
-
-  .photos-panel { padding: 14px; }
-
-  .nav-dock {
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    margin-top: 18px;
-  }
-
-  .nav-dock-inner {
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 12px 14px;
-    border-radius: var(--radius-lg);
-  }
-
-  .nav-dock .step-label {
-    order: -1;
-    width: 100%;
-    font-size: 11px;
-  }
-
-  .nav-dock button {
-    flex: 1;
-    min-width: 0;
-    padding: 12px 14px;
-    font-size: 13px;
-  }
-
-  .nav-dock .next { min-width: 0; }
-
-  .camera-modal {
-    padding: 0;
-    align-items: flex-end;
-  }
-
-  .camera-modal-inner {
-    width: 100%;
-    max-width: 100%;
-    border-radius: 16px 16px 0 0;
-  }
-
-  .lightbox { padding: 12px; }
-  .lb-prev { left: 8px; }
-  .lb-next { right: 8px; }
-  .lb-close { top: 12px; right: 12px; }
+  .cards { grid-template-columns: 1fr; }
+  .nav-dock-inner { flex-wrap: wrap; }
+  .nav-dock .step-label { order: -1; width: 100%; }
+  .nav-dock button { flex: 1; min-width: 0; }
 }
 
-@media (max-width: 480px) {
-  .app {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
+/* ── Premium Pre-Inspection Customer & Vehicle Screens ── */
+.onboarding {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  padding: 28px 22px 48px;
+  display: block;
+}
+body:not(.prestart) .onboarding { display: none; }
+body.prestart .app { display: none; }
+.onboard-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.onboard-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 76px);
+  display: grid;
+  place-items: center;
+  padding: 34px;
+  border-radius: 42px;
+  background:
+    radial-gradient(circle at 82% 10%, rgba(255,255,255,.48), transparent 28%),
+    radial-gradient(circle at 14% 92%, rgba(96,165,250,.25), transparent 34%),
+    linear-gradient(135deg, rgba(255,255,255,.92), rgba(239,246,255,.78));
+  border: 1px solid rgba(147,197,253,.65);
+  box-shadow: 0 28px 90px rgba(37,99,235,.16), inset 0 1px 0 rgba(255,255,255,.92);
+  backdrop-filter: blur(24px);
+}
+.onboard-hero::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background-image:
+    linear-gradient(rgba(59,130,246,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,.06) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 72%);
+  pointer-events: none;
+}
+.glow-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(8px);
+  opacity: .9;
+  pointer-events: none;
+  animation: floatOrb 7s ease-in-out infinite;
+}
+.orb-one { width: 120px; height: 120px; right: 10%; top: 12%; background: rgba(59,130,246,.18); }
+.orb-two { width: 170px; height: 170px; left: 8%; bottom: 10%; background: rgba(147,197,253,.25); animation-delay: -2s; }
+@keyframes floatOrb { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scale(1.04); } }
+.onboard-card {
+  position: relative;
+  width: min(100%, 720px);
+  padding: 34px;
+  border-radius: 34px;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(191,219,254,.9);
+  box-shadow: 0 24px 70px rgba(30,64,175,.16), inset 0 1px 0 rgba(255,255,255,1);
+}
+.onboard-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-light);
+  white-space: nowrap;
+}
+.step-pill.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28);
+}
+.step-line { flex: 1; height: 2px; border-radius: 99px; background: linear-gradient(90deg, var(--primary-light), transparent); }
+.onboard-title {
+  font-size: clamp(22px, 2.5vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  color: var(--text);
+}
+.onboard-sub {
+  margin: 6px 0 26px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.customer-select-box {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #F8FAFC, #EFF6FF);
+  border: 1px solid rgba(147,197,253,.7);
+  box-shadow: inset 0 1px 0 #fff;
+}
+.customer-select-box select {
+  min-height: 58px;
+  border: none;
+  outline: none;
+  border-radius: 18px;
+  padding: 0 18px;
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 8px 24px rgba(37,99,235,.08);
+}
+.add-customer-btn {
+  width: 58px;
+  height: 58px;
+  border: none;
+  border-radius: 18px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 300;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  box-shadow: 0 12px 28px rgba(37,99,235,.32);
+  transition: var(--transition);
+}
+.add-customer-btn:hover { transform: translateY(-3px) scale(1.03); }
+.onboard-actions { display: flex; justify-content: space-between; gap: 14px; margin-top: 24px; }
+.onboard-btn {
+  min-height: 54px;
+  padding: 0 24px;
+  border-radius: 18px;
+  border: 1px solid var(--border-strong);
+  background: #fff;
+  color: var(--primary-dark);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.onboard-btn.primary {
+  border: none;
+  color: #fff;
+  min-width: 210px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  box-shadow: 0 14px 34px rgba(37,99,235,.32);
+}
+.onboard-btn:hover { transform: translateY(-3px); }
+.onboard-screen { display: none; animation: premiumIn .45s cubic-bezier(.34,1.2,.64,1) both; }
+.onboard-screen.active { display: block; }
+@keyframes premiumIn { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-  .top {
-    margin: 0 -12px;
-    padding-left: 12px;
-    padding-right: 12px;
-  }
+.vehicle-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 6px;
+}
+.add-vehicle-btn {
+  position: relative;
+  isolation: isolate;
+  min-height: 56px;
+  padding: 0 22px 0 16px;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 20px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -.01em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background:
+    linear-gradient(135deg, rgba(96,165,250,.98), rgba(37,99,235,.98) 55%, rgba(29,78,216,.98));
+  box-shadow:
+    0 16px 38px rgba(37,99,235,.36),
+    0 6px 16px rgba(37,99,235,.20),
+    inset 0 1px 0 rgba(255,255,255,.42);
+  overflow: hidden;
+  transition: transform .28s cubic-bezier(.34,1.2,.64,1), box-shadow .28s ease, filter .28s ease;
+}
+.add-vehicle-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,255,255,.65), transparent 24%),
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,.35) 45%, transparent 70%);
+  transform: translateX(-75%);
+  transition: transform .65s ease;
+  z-index: -1;
+}
+.add-vehicle-btn::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.25);
+  pointer-events: none;
+}
+.add-vehicle-btn b {
+  width: 34px;
+  height: 34px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 300;
+  background: rgba(255,255,255,.20);
+  border: 1px solid rgba(255,255,255,.38);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
+  backdrop-filter: blur(8px);
+}
+.add-vehicle-btn:hover {
+  transform: translateY(-4px) scale(1.025);
+  filter: saturate(1.12);
+  box-shadow:
+    0 22px 52px rgba(37,99,235,.44),
+    0 10px 24px rgba(37,99,235,.25),
+    inset 0 1px 0 rgba(255,255,255,.50);
+}
+.add-vehicle-btn:hover::before { transform: translateX(75%); }
+.add-vehicle-btn:active { transform: translateY(-1px) scale(.99); }
+.add-vehicle-btn:focus-visible { outline: none; box-shadow: 0 0 0 5px rgba(59,130,246,.20), 0 18px 44px rgba(37,99,235,.36); }
+.vehicle-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+}
+.vehicle-meta span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(239,246,255,.92);
+  border: 1px solid rgba(191,219,254,.95);
+  color: #1D4ED8;
+  font-size: 10px;
+  font-weight: 800;
+}
+.vehicle-logo { width: 44px; height: 44px; }
+.vehicle-logo .silver { fill: none; stroke: #1E3A8A; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.vehicle-logo .thin { fill: none; stroke: #1E3A8A; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
 
-  .vehicle-logo-box {
-    width: 64px;
-    height: 64px;
-    padding: 7px;
-  }
-
-  .vehicle-info h1 { font-size: 16px; }
-
-  .vehicle-health-ring,
-  .vehicle-health-ring svg {
-    width: 62px;
-    height: 62px;
-  }
-
-  .vhr-pct { font-size: 15px; }
-
-  .step-count-badge {
-    font-size: 10px;
-    padding: 5px 10px;
-  }
-
-  .step-ring {
-    width: 64px;
-    height: 64px;
-  }
-
-  .card-head {
-    flex-wrap: nowrap;
-    align-items: flex-start;
-  }
-
-  .point { min-width: 0; flex: 1; }
-
-  .radio,
-  .seg {
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 0 8px;
-    font-size: 12px;
-    gap: 5px;
-  }
-
-  .radio .status-icon,
-  .seg .status-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .radio .status-icon svg,
-  .seg .status-icon svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-
-  .btn { width: 100%; }
-
-  .nav-dock button {
-    padding: 11px 10px;
-    font-size: 12px;
-  }
-
-  .note-editor textarea { min-height: 76px; }
+.vehicle-list { display: grid; gap: 14px; margin-top: 22px; }
+.vehicle-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 24px;
+  border: 1.5px solid rgba(191,219,254,.95);
+  background: linear-gradient(145deg, #fff, #F8FAFC);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition);
+  box-shadow: 0 10px 30px rgba(37,99,235,.08);
+}
+.vehicle-option:hover,
+.vehicle-option.selected {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 18px 42px rgba(37,99,235,.16);
+  background: linear-gradient(145deg, #fff, #EFF6FF);
+}
+.vehicle-main { display: flex; align-items: center; gap: 14px; }
+.vehicle-icon {
+  width: 54px; height: 54px; border-radius: 18px;
+  display: grid; place-items: center; font-size: 24px;
+  background: linear-gradient(135deg, var(--primary-soft), var(--primary-light));
+  border: 1px solid var(--border-strong);
+}
+.vehicle-name { display: block; font-size: 16px; font-weight: 900; letter-spacing: -.02em; color: var(--text); }
+.vehicle-vin { display: block; margin-top: 5px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.vehicle-check {
+  width: 32px; height: 32px; border-radius: 999px; display: grid; place-items: center;
+  color: #fff; background: linear-gradient(135deg, var(--good), #059669);
+  opacity: 0; transform: scale(.7); transition: var(--transition);
+}
+.vehicle-option.selected .vehicle-check { opacity: 1; transform: scale(1); }
+.selected-customer-chip {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  padding: 8px 12px; border-radius: 999px; background: #ECFDF5; color: #047857;
+  font-size: 12px; font-weight: 800; border: 1px solid #A7F3D0;
 }
 
-@media (max-width: 360px) {
-  .vehicle-header-inner {
-    grid-template-columns: 58px minmax(0, 1fr);
-    grid-template-areas:
-      "logo info"
-      "health health";
-    gap: 8px 10px;
-    padding: 10px;
-  }
+.inspection-type-list {
+  width: min(100%, 620px);
+  margin: 24px auto 0;
+  display: grid;
+  gap: 14px;
+}
+.inspection-type-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1.5px solid rgba(191,219,254,.95);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(59,130,246,.10), transparent 28%),
+    linear-gradient(145deg, #fff, #F8FAFC);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition);
+  box-shadow: 0 10px 30px rgba(37,99,235,.08);
+}
+.inspection-type-option:hover,
+.inspection-type-option.selected {
+  transform: translateY(-4px) scale(1.01);
+  border-color: var(--primary);
+  background:
+    radial-gradient(circle at 90% 10%, rgba(59,130,246,.16), transparent 32%),
+    linear-gradient(145deg, #fff, #EFF6FF);
+  box-shadow: 0 20px 48px rgba(37,99,235,.18);
+}
+.inspection-type-main { display: flex; align-items: center; gap: 15px; min-width: 0; }
+.inspection-type-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  font-size: 25px;
+  background: linear-gradient(135deg, var(--primary-soft), var(--primary-light));
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 1px 0 #fff, 0 8px 18px rgba(37,99,235,.10);
+}
+.inspection-type-title { display: block; font-size: 16px; font-weight: 900; letter-spacing: -.02em; color: var(--text); }
+.inspection-type-desc { display: block; margin-top: 6px; font-size: 12px; font-weight: 700; line-height: 1.45; color: var(--muted); }
+.inspection-type-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.inspection-type-meta span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #EFF6FF;
+  border: 1px solid #DBEAFE;
+  color: #1D4ED8;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.inspection-type-check {
+  width: 34px; height: 34px; border-radius: 999px; display: grid; place-items: center;
+  color: #fff; background: linear-gradient(135deg, var(--good), #059669);
+  opacity: 0; transform: scale(.7); transition: var(--transition); flex-shrink: 0;
+}
+.inspection-type-option.selected .inspection-type-check { opacity: 1; transform: scale(1); }
 
-  .vehicle-health {
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 8px 10px;
-  }
-
-  .vehicle-health-ring,
-  .vehicle-health-ring svg {
-    width: 58px;
-    height: 58px;
-  }
-
-  .vehicle-info h1 { font-size: 15px; }
-  .vehicle-model { font-size: 11px; }
-  .vehicle-vin { font-size: 9px; }
-  .step-stat-label { font-size: 9px; }
-  .step-stat-val { font-size: 20px; }
-  .nav-dock-inner { padding: 10px 12px; }
+@media (max-width: 680px) {
+  .onboarding { padding: 14px; }
+  .onboard-hero { padding: 18px; border-radius: 28px; }
+  .onboard-card { padding: 22px; border-radius: 26px; }
+  .customer-select-box { grid-template-columns: 1fr; }
+  .add-customer-btn { width: 100%; }
+  .onboard-actions { flex-direction: column; }
+  .onboard-btn.primary { min-width: 0; }
+  .vehicle-option { padding: 16px; }
+  .vehicle-head-row { flex-direction: column; }
+  .add-vehicle-btn { width: 100%; justify-content: center; }
+  .vehicle-icon { width: 62px; height: 62px; border-radius: 18px; }
+  .vehicle-logo { width: 50px; height: 50px; }
 }
 
-@media (hover: none) and (pointer: coarse) {
-  .card:hover {
-    transform: none;
-    box-shadow: var(--shadow-card);
-  }
-
-  .btn:hover { transform: none; }
-  .nav-dock button:hover:not(:disabled) { transform: none; }
-  .thumb-wrap:hover { transform: none; }
-}
 </style>
 </head>
-<body>
+<body class="prestart">
+
+<div class="onboarding" id="onboarding">
+  <div class="onboard-wrap">
+    <div class="onboard-hero">
+      <span class="glow-orb orb-one"></span>
+      <span class="glow-orb orb-two"></span>
+      <section class="onboard-card onboard-screen active" id="customerScreen">
+        <div class="onboard-stepper">
+          <span class="step-pill active">1 Customer</span><span class="step-line"></span><span class="step-pill">2 Vehicle</span><span class="step-line"></span><span class="step-pill">3 Type</span><span class="step-line"></span><span class="step-pill">4 Inspection</span>
+        </div>
+        <h1 class="onboard-title">Select the Customer</h1>
+        <p class="onboard-sub">Start the inspection with a clean premium flow. Select an existing customer from the dropdown, or add a new customer instantly.</p>
+        <div class="customer-select-box">
+          <select id="customerSelect" onchange="updateSelectedCustomer()">
+            <option value="Muhammad Sheraz">Muhammad Sheraz (+971 56 693 933)</option>
+            <option value="Ahmed Al Mansoori">Ahmed Al Mansoori (+971 55 220 118)</option>
+            <option value="Khalid Garage">Khalid Garage (+971 50 778 441)</option>
+          </select>
+          <button type="button" class="add-customer-btn" title="Add new customer" onclick="showToast('Add New Customer clicked')">+</button>
+        </div>
+        <div class="onboard-actions">
+          <span></span>
+          <button type="button" class="onboard-btn primary" onclick="goVehicleScreen()">Continue to Vehicle →</button>
+        </div>
+      </section>
+
+      <section class="onboard-card onboard-screen" id="vehicleScreen">
+        <div class="onboard-stepper">
+          <span class="step-pill">1 Customer</span><span class="step-line"></span><span class="step-pill active">2 Vehicle</span><span class="step-line"></span><span class="step-pill">3 Type</span><span class="step-line"></span><span class="step-pill">4 Inspection</span>
+        </div>
+        <span class="selected-customer-chip">✓ Customer Selected</span>
+        <div class="vehicle-head-row">
+          <div>
+            <h1 class="onboard-title">Select the Vehicle for <span id="selectedCustomerName">Muhammad Sheraz</span></h1>
+            <p class="onboard-sub">Choose the customer vehicle to continue. The selected vehicle will be used for the inspection wizard.</p>
+          </div>
+          <button type="button" class="add-vehicle-btn" title="Add vehicle" onclick="showToast('Add Vehicle clicked')"><b>+</b> Add Vehicle</button>
+        </div>
+        <div class="vehicle-list" id="vehicleList">
+          <button type="button" class="vehicle-option selected" onclick="selectVehicle(this)">
+            <span class="vehicle-main"><span class="vehicle-icon">
+              <svg class="vehicle-logo" viewBox="0 0 64 64" aria-label="Lexus logo"><ellipse class="silver" cx="32" cy="32" rx="24" ry="20"/><path class="silver" d="M36 17 L24 32 L39 32 M24 32 L20 46 L43 46"/></svg>
+            </span><span><span class="vehicle-name">Lexus 570 - DXB 4455</span><span class="vehicle-vin">VIN : 23-24242424244</span><span class="vehicle-meta"><span>Luxury SUV</span><span>2026</span><span>54,220 KM</span></span></span></span><span class="vehicle-check">✓</span>
+          </button>
+          <button type="button" class="vehicle-option" onclick="selectVehicle(this)">
+            <span class="vehicle-main"><span class="vehicle-icon">
+              <svg class="vehicle-logo" viewBox="0 0 64 64" aria-label="Mercedes logo"><circle class="silver" cx="32" cy="32" r="24"/><path class="thin" d="M32 10 L32 32 L50 43 M32 32 L14 43"/></svg>
+            </span><span><span class="vehicle-name">Mercedes G63 - AUH 9090</span><span class="vehicle-vin">VIN : 98-77889900112</span><span class="vehicle-meta"><span>AMG</span><span>2024</span><span>31,800 KM</span></span></span></span><span class="vehicle-check">✓</span>
+          </button>
+          <button type="button" class="vehicle-option" onclick="selectVehicle(this)">
+            <span class="vehicle-main"><span class="vehicle-icon">
+              <svg class="vehicle-logo" viewBox="0 0 64 64" aria-label="Nissan logo"><circle class="silver" cx="32" cy="32" r="23"/><rect x="11" y="25" width="42" height="14" rx="4" fill="#EFF6FF" stroke="#1E3A8A" stroke-width="3"/><text x="32" y="35.5" text-anchor="middle" font-size="10">NISSAN</text></svg>
+            </span><span><span class="vehicle-name">Nissan Patrol - SHJ 2211</span><span class="vehicle-vin">VIN : 45-11223344556</span><span class="vehicle-meta"><span>Platinum</span><span>2025</span><span>18,900 KM</span></span></span></span><span class="vehicle-check">✓</span>
+          </button>
+        </div>
+        <div class="onboard-actions">
+          <button type="button" class="onboard-btn" onclick="goCustomerScreen()">← Back</button>
+          <button type="button" class="onboard-btn primary" onclick="goInspectionTypeScreen()">Continue to Type →</button>
+        </div>
+      </section>
+
+      <section class="onboard-card onboard-screen" id="inspectionTypeScreen">
+        <div class="onboard-stepper">
+          <span class="step-pill">1 Customer</span><span class="step-line"></span><span class="step-pill">2 Vehicle</span><span class="step-line"></span><span class="step-pill active">3 Type</span><span class="step-line"></span><span class="step-pill">4 Inspection</span>
+        </div>
+        <span class="selected-customer-chip">✓ Vehicle Selected</span>
+        <h1 class="onboard-title" style="text-align:center">Select Inspection Type</h1>
+        <p class="onboard-sub" style="text-align:center;max-width:620px;margin-left:auto;margin-right:auto">Choose the inspection workflow before starting the detailed checklist. Each option is designed for a different workshop use case.</p>
+        <div class="inspection-type-list" id="inspectionTypeList">
+          <button type="button" class="inspection-type-option selected" onclick="selectInspectionType(this)">
+            <span class="inspection-type-main"><span class="inspection-type-icon">✦</span><span><span class="inspection-type-title">360 Vehicle Inspection</span><span class="inspection-type-desc">Complete exterior, interior, engine, tyres, brakes, road test and safety inspection.</span><span class="inspection-type-meta"><span>Full Report</span><span>Premium</span><span>Recommended</span></span></span></span><span class="inspection-type-check">✓</span>
+          </button>
+          <button type="button" class="inspection-type-option" onclick="selectInspectionType(this)">
+            <span class="inspection-type-main"><span class="inspection-type-icon">⚡</span><span><span class="inspection-type-title">Quick Check-In Inspection</span><span class="inspection-type-desc">Fast front-desk inspection for visible condition, photos and initial customer approval.</span><span class="inspection-type-meta"><span>Fast</span><span>Check-In</span></span></span></span><span class="inspection-type-check">✓</span>
+          </button>
+          <button type="button" class="inspection-type-option" onclick="selectInspectionType(this)">
+            <span class="inspection-type-main"><span class="inspection-type-icon">🛡</span><span><span class="inspection-type-title">Pre-Purchase Inspection</span><span class="inspection-type-desc">Detailed buyer confidence inspection focused on condition, safety, accident signs and road test.</span><span class="inspection-type-meta"><span>Buyer Report</span><span>Detailed</span></span></span></span><span class="inspection-type-check">✓</span>
+          </button>
+          <button type="button" class="inspection-type-option" onclick="selectInspectionType(this)">
+            <span class="inspection-type-main"><span class="inspection-type-icon">🔧</span><span><span class="inspection-type-title">Service Diagnostic Inspection</span><span class="inspection-type-desc">Workshop inspection for fault finding, service recommendations, parts and repair planning.</span><span class="inspection-type-meta"><span>Service</span><span>Parts</span></span></span></span><span class="inspection-type-check">✓</span>
+          </button>
+          <button type="button" class="inspection-type-option" onclick="selectInspectionType(this)">
+            <span class="inspection-type-main"><span class="inspection-type-icon">🚗</span><span><span class="inspection-type-title">Delivery Quality Inspection</span><span class="inspection-type-desc">Final quality control before vehicle handover with photos, comments and completion confirmation.</span><span class="inspection-type-meta"><span>QC</span><span>Handover</span></span></span></span><span class="inspection-type-check">✓</span>
+          </button>
+        </div>
+        <div class="onboard-actions">
+          <button type="button" class="onboard-btn" onclick="goVehicleScreenFromType()">← Back</button>
+          <button type="button" class="onboard-btn primary" onclick="startInspection()">Start Inspection →</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <div class="top">
-    <div class="vehicle-header">
-      <div class="vehicle-header-shine"></div>
-      <div class="vehicle-header-inner">
-        <div class="vehicle-logo-wrap">
-          <div class="vehicle-logo-box vh-glass-tile">
-            <img src="lexus_image.jpg" alt="Lexus" class="vehicle-logo" />
-          </div>
+    <div class="hero">
+      <div class="hero-grid"></div>
+      <div class="brand">
+        <div class="logo">✦</div>
+        <div>
+          <h1>AutoFixia Inspection Wizard</h1>
+          <p>Mercedes/Tesla inspired light-blue premium tablet experience for complete vehicle inspection.</p>
         </div>
-        <div class="vehicle-info">
-          <h1>360 Vehicle Inspection</h1>
-          <p class="vehicle-model"><strong>Lexus 570</strong> 2026 (Plate DXB4422)</p>
-          <div class="vehicle-vin">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-              <rect x="4" y="4" width="16" height="16" rx="3"/>
-              <rect x="7" y="7" width="10" height="10" rx="1.5"/>
-              <path d="M9 10h2v4H9z"/><path d="M13 10h2v4h-2z"/>
-            </svg>
-            <span>VIN : 32423432432432432</span>
-          </div>
-        </div>
-        <div class="vehicle-health vh-glass-tile">
-          <small>Overall Health</small>
-          <div class="vehicle-health-ring">
-            <svg viewBox="0 0 92 92" width="92" height="92">
-              <defs>
-                <linearGradient id="vhrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#5BA4FF"/>
-                  <stop offset="100%" stop-color="#1E56D9"/>
-                </linearGradient>
-              </defs>
-              <circle class="vhr-bg" cx="46" cy="46" r="36"/>
-              <circle class="vhr-fill" id="overallCirc" cx="46" cy="46" r="36"/>
-            </svg>
-            <span class="vhr-pct" id="overall">88%</span>
-          </div>
+      </div>
+      <div class="health">
+        <small>Overall Health</small>
+        <div class="circ" id="overallRing">
+          <svg viewBox="0 0 92 92" width="92" height="92">
+            <circle class="circ-bg" cx="46" cy="46" r="38"/>
+            <circle class="circ-fill" id="overallCirc" cx="46" cy="46" r="38"/>
+          </svg>
+          <div class="circ-text" id="overall">88%</div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="wizard">
+    <aside class="side" id="sidePanel">
+      <div class="side-header">
+        <div class="side-header-top">
+          <h3>Categories</h3>
+          <button type="button" class="side-toggle" id="sideToggle" onclick="toggleSidebar()" aria-label="Collapse sidebar" aria-expanded="true" title="Collapse menu">‹</button>
+        </div>
+        <div class="search">
+          <input id="search" placeholder="Search category…" />
+        </div>
+      </div>
+      <div class="cat-list" id="catList"></div>
+    </aside>
+
     <main class="content">
       <div class="stepbar">
         <svg width="0" height="0" style="position:absolute">
@@ -2343,10 +2581,7 @@ body.progress-dragging .progress-thumb {
             <span class="progress-label">Inspection Progress</span>
             <div class="progress-pct"><span id="progressPct">0</span><small>%</small></div>
           </div>
-          <div class="progress-cats">
-            <div class="cat-list" id="catList"></div>
-          </div>
-          <div class="progress-track" id="progressTrack" role="slider" aria-label="Inspection progress" aria-valuemin="1" aria-valuemax="15" aria-valuenow="1">
+          <div class="progress-track">
             <div class="progress"><span id="progressFill"></span></div>
             <div class="progress-thumb" id="progressThumb"></div>
           </div>
@@ -2422,6 +2657,48 @@ body.progress-dragging .progress-thumb {
 <div class="toast" id="toast"><span class="toast-icon">✓</span><span id="toastMsg"></span></div>
 
 <script>
+
+let selectedCustomer = 'Muhammad Sheraz';
+function updateSelectedCustomer(){
+  const sel=document.getElementById('customerSelect');
+  selectedCustomer=sel.value;
+  const nameEl=document.getElementById('selectedCustomerName');
+  if(nameEl) nameEl.textContent=selectedCustomer;
+}
+function goVehicleScreen(){
+  updateSelectedCustomer();
+  document.querySelectorAll('.onboard-screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('vehicleScreen').classList.add('active');
+}
+function goCustomerScreen(){
+  document.querySelectorAll('.onboard-screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('customerScreen').classList.add('active');
+}
+function selectVehicle(btn){
+  document.querySelectorAll('.vehicle-option').forEach(v=>v.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function hideOnboardScreens(){
+  document.querySelectorAll('.onboard-screen').forEach(s=>s.classList.remove('active'));
+}
+function goInspectionTypeScreen(){
+  hideOnboardScreens();
+  document.getElementById('inspectionTypeScreen').classList.add('active');
+}
+function goVehicleScreenFromType(){
+  hideOnboardScreens();
+  document.getElementById('vehicleScreen').classList.add('active');
+}
+function selectInspectionType(btn){
+  document.querySelectorAll('.inspection-type-option').forEach(v=>v.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function startInspection(){
+  document.body.classList.remove('prestart');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
 const MAX_PHOTOS = 12;
 const categories=[
  {name:'Exterior Inspection', icon:'🚘', points:['Body Panels Condition','Paint Condition','Windshield Condition','Headlights Condition','Tail Lights Condition','Side Mirrors Condition']},
@@ -2441,62 +2718,15 @@ const categories=[
  {name:'Lubricants', icon:'🛢', points:['Engine Oil Condition','Engine Oil Leakage','Brake Fluid Leakage','Transmission Oil Leakage','Coolant Leakage','Differential Oil Level','Brake Fluid Level','Engine Oil Level','Power Steering Fluid Level','Transmission Fluid Level']}
 ];
 let current=14;
-let progressDragging=false;
+let sidebarCollapsed=false;
 let uploadTarget=null;
 let lightboxState={point:null,index:0};
 let cameraStream=null;
-const state={};
 const tyreDepthPoints=['Front Right Tyre','Front Left Tyre','Rear Right Tyre','Rear Left Tyre','Spare Tyre'];
 const brakePadPoints=['FR Brake Pad','FL Brake Pad','RR Brake Pad','RL Brake Pad'];
 const brakeDiscPoints=['FR Disc','FL Disc','RR Disc','RL Disc'];
-const measureDefaults={
-  'Front Right Tyre':5.5,'Front Left Tyre':5.5,'Rear Right Tyre':5.5,'Rear Left Tyre':5.5,'Spare Tyre':5.5,
-  'FR Brake Pad':8.25,'FL Brake Pad':12,'RR Brake Pad':12,'RL Brake Pad':6,
-  'FR Disc':21,'FL Disc':40,'RR Disc':40,'RL Disc':20
-};
-function rangeStatusPadTyre(mm){
-  if(mm<3)return 'poor';
-  if(mm<6)return 'fair';
-  return 'good';
-}
-function rangeStatusDisc(mm){
-  if(mm<15)return 'poor';
-  if(mm<22)return 'fair';
-  return 'good';
-}
-function getMeasureConfig(pt){
-  if(tyreDepthPoints.includes(pt)||brakePadPoints.includes(pt)){
-    return{
-      max:12,step:0.25,
-      label:brakePadPoints.includes(pt)?'Brake Pad Thickness (mm)':'Tyre Tread Depth (mm)',
-      scale:['0 mm','3 mm','6 mm','9 mm','12 mm'],
-      status:rangeStatusPadTyre,
-      disc:false
-    };
-  }
-  if(brakeDiscPoints.includes(pt)){
-    return{
-      max:40,step:0.25,
-      label:'Brake Disc Thickness (mm)',
-      scale:['0 mm','10 mm','20 mm','30 mm','40 mm'],
-      status:rangeStatusDisc,
-      disc:true
-    };
-  }
-  return null;
-}
-function isMeasurePoint(pt){return !!getMeasureConfig(pt)}
-function mmToScore(mm,max){return Math.round((Math.max(0,Math.min(max,mm))/max)*100)}
-function fmtMm(v){return Number(v).toFixed(2)}
-function initPointState(p){
-  const cfg=getMeasureConfig(p);
-  if(cfg){
-    const val=measureDefaults[p]??(cfg.max===12?5.5:20);
-    return{score:mmToScore(val,cfg.max),status:'Good',notes:false,noteText:'',photosOpen:false,photos:[],measureMm:val};
-  }
-  return{score:85,status:'Good',notes:false,noteText:'',photosOpen:false,photos:[]};
-}
-categories.forEach(c=>c.points.forEach(p=>state[p]=initPointState(p)));
+const state={};
+categories.forEach(c=>c.points.forEach(p=>state[p]={score:85,status:'Good',notes:false,noteText:'',photosOpen:false,photos:[],treadDepth:6.00,brakeThickness:brakeDiscPoints.includes(p)?20.00:6.00}));
 
 const fileInput=document.getElementById('fileInput');
 const cameraInput=document.getElementById('cameraInput');
@@ -2511,14 +2741,106 @@ fileInput.addEventListener('change',onFilesPicked);
 cameraInput.addEventListener('change',onFilesPicked);
 
 function esc(s){return s.replace(/'/g,"\\'").replace(/"/g,'&quot;')}
-function escHtml(t){
-  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
 function pid(s){return s.replace(/[^a-zA-Z0-9]/g,'_')}
+function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function showToast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(showToast._t);showToast._t=setTimeout(()=>t.classList.remove('show'),2800)}
+let voiceRec=null;
+let voicePt=null;
+let voiceBase='';
+
+function clearMicUI(){
+  document.querySelectorAll('.btn-mic.listening').forEach(b=>b.classList.remove('listening'));
+}
+
+function stopVoiceListening(){
+  if(!voiceRec)return;
+  const pt=voicePt;
+  const rec=voiceRec;
+  voiceRec=null;
+  voicePt=null;
+  clearMicUI();
+  try{rec.stop()}catch(e){}
+  if(pt)updateSaveBtnVisibility(pt);
+}
+
+function startVoiceComment(pt){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('Voice not supported in this browser');return}
+  const card=getCard(pt);
+  if(!card)return;
+  if(voiceRec&&voicePt===pt){stopVoiceListening();return}
+  if(voiceRec)stopVoiceListening();
+  state[pt].notes=true;
+  updateCardNotes(pt);
+  const ta=card.querySelector('.note-area textarea');
+  voiceBase=(ta?.value.trim()||state[pt].noteText||'').trim();
+  if(ta)ta.value=voiceBase;
+  voicePt=pt;
+  voiceRec=new SR();
+  voiceRec.lang=navigator.language||'en-US';
+  voiceRec.interimResults=true;
+  voiceRec.continuous=true;
+  card.querySelector('[data-action="mic"]')?.classList.add('listening');
+  voiceRec.onresult=(e)=>{
+    let final=voiceBase;
+    let interim='';
+    for(let i=0;i<e.results.length;i++){
+      const t=e.results[i][0].transcript.trim();
+      if(!t)continue;
+      if(e.results[i].isFinal)final=final?(final+' '+t):t;
+      else interim=t;
+    }
+    if(ta){
+      ta.value=interim?(final?(final+' '):'')+interim:final;
+      updateSaveBtnVisibility(pt);
+    }
+  };
+  voiceRec.onerror=(e)=>{
+    if(e.error!=='aborted')showToast(e.error==='not-allowed'?'Allow microphone access':'Voice input failed');
+    voiceRec=null;
+    voicePt=null;
+    clearMicUI();
+  };
+  voiceRec.onend=()=>{
+    if(!voicePt)return;
+    const activePt=voicePt;
+    voiceRec=null;
+    voicePt=null;
+    clearMicUI();
+    updateSaveBtnVisibility(activePt);
+  };
+  try{voiceRec.start();showToast('Listening… tap mic to stop')}
+  catch(err){showToast('Could not start microphone');voiceRec=null;voicePt=null;clearMicUI()}
+}
+
 
 function circRing(r,pct){const len=2*Math.PI*r;return{len,off:len*(1-pct/100)}}
 function setCircFill(el,r,pct){const{len,off}=circRing(r,pct);el.style.strokeDasharray=len;el.style.strokeDashoffset=off}
+
+function isTyreDepthPoint(pt){
+  const c=categories[current];
+  return c&&c.name==='Tyres'&&tyreDepthPoints.includes(pt);
+}
+function treadToScore(mm){return Math.round((Math.max(0,Math.min(12,mm))/12)*100)}
+function fmtMm(v){return Number(v).toFixed(2)}
+function rangeStatusByDepth(mm){
+  if(mm<3)return 'poor';
+  if(mm<6)return 'fair';
+  return 'good';
+}
+function getBrakeConfig(pt){
+  const c=categories[current];
+  if(!c||c.name!=='Brake System')return null;
+  if(brakePadPoints.includes(pt))return {type:'pad',label:'Brake Pad Thickness',max:12,scale:[0,3,6,9,12],defaultValue:6};
+  if(brakeDiscPoints.includes(pt))return {type:'disc',label:'Brake Disc Thickness',max:40,scale:[0,10,20,30,40],defaultValue:20};
+  return null;
+}
+function rangeStatusByMax(v,max){
+  const pct=(Math.max(0,Math.min(max,v))/max)*100;
+  if(pct<30)return 'poor';
+  if(pct<60)return 'fair';
+  return 'good';
+}
 
 function scoreRingHTML(pct,status){
   const r=30;const{len,off}=circRing(r,pct);const st=status.toLowerCase();
@@ -2529,7 +2851,7 @@ function scoreRingHTML(pct,status){
         <circle class="circ-bg" cx="38" cy="38" r="${r}"/>
         <circle class="circ-fill" cx="38" cy="38" r="${r}" style="stroke-dasharray:${len};stroke-dashoffset:${off}"/>
       </svg>
-      <div class="circ-text"><span class="score-pct">${pct}%</span><small></small></div>
+      <div class="circ-text"><b>${pct}%</b><small>Score</small></div>
     </div>
   </div>`;
 }
@@ -2751,7 +3073,7 @@ function renderPhotoPanel(pt){
       </div>`;
     });
     if(canAdd){
-      html+=`<div class="thumb-add" data-action="add-photo" onclick="event.stopPropagation();triggerUpload('${esc(pt)}',true)"><span>+</span><small>Add More</small></div>`;
+      html+=`<div class="thumb-add" data-action="add-photo"><span>+</span><small>Add More</small></div>`;
     }
     html+=`</div>`;
   }
@@ -2766,23 +3088,57 @@ const catList=document.getElementById('catList');
 function getCard(pt){return cardsEl.querySelector('[data-pt="'+encodeURIComponent(pt)+'"]')}
 function getPt(el){return decodeURIComponent(el.dataset.pt)}
 
-function statusIcon(type){
-  if(type==='poor')return'<span class="status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>';
-  if(type==='fair')return'<span class="status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg></span>';
-  return'<span class="status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5 5-5"/></svg></span>';
+function buildCardHTML(pt,c,s,idx){
+  const tyreDepth=isTyreDepthPoint(pt);
+  const brakeCfg=getBrakeConfig(pt);
+  const hasMeasure=tyreDepth||!!brakeCfg;
+  const maxVal=tyreDepth?12:(brakeCfg?brakeCfg.max:100);
+  const measureVal=tyreDepth?Number(s.treadDepth ?? 6):(brakeCfg?Number(s.brakeThickness ?? brakeCfg.defaultValue):s.score);
+  const sliderValue=hasMeasure?fmtMm(measureVal):s.score;
+  const fillWidth=hasMeasure?(measureVal/maxVal*100):s.score;
+  const sliderLabel=tyreDepth?'Tyre Tread Depth (mm)':(brakeCfg?brakeCfg.label:'Health Score');
+  const sliderDisplay=hasMeasure?fmtMm(measureVal)+' mm':s.score+'%';
+  const ringHTML=hasMeasure?measureRingHTML(measureVal,maxVal):scoreRingHTML(s.score,s.status);
+  const rangeClass=tyreDepth?rangeStatusByDepth(measureVal):(brakeCfg?rangeStatusByMax(measureVal,maxVal):s.status.toLowerCase());
+  const rangeAttrs=hasMeasure?`min="0" max="${maxVal}" step="0.25" data-mode="measure" data-max="${maxVal}"`:'min="0" max="100" data-mode="score"';
+  return`<div class="card status-${s.status.toLowerCase()}" data-pt="${encodeURIComponent(pt)}" style="animation-delay:${idx*0.04}s">
+    <div class="card-head">
+      <div class="point">
+        <div><h3>${pt}</h3><p>Inspect and record condition</p></div>
+      </div>
+      ${ringHTML}
+    </div>
+    <div class="slider-box ${hasMeasure?'tyre-depth-box':''}">
+      <div class="slider-label"><span>${sliderLabel}</span><span class="slider-pct">${sliderDisplay}</span></div>
+      <div class="range-wrap ${rangeClass}">
+        <div class="range-fill" style="width:${fillWidth}%"></div>
+        <input class="range" type="range" ${rangeAttrs} value="${sliderValue}">
+      </div>
+      ${hasMeasure?`<div class="tread-scale">${(tyreDepth?[0,3,6,9,12]:brakeCfg.scale).map(v=>`<span>${v} mm</span>`).join('')}</div>`:''}
+    </div>
+    <div class="status-title">Condition Status</div>
+    <div class="radios">
+      <div class="radio poor ${s.status==='Poor'?'active':''}" data-status="Poor">Poor</div>
+      <div class="radio fair ${s.status==='Fair'?'active':''}" data-status="Fair">Fair</div>
+      <div class="radio good ${s.status==='Good'?'active':''}" data-status="Good">Good</div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn notes ${s.notes?'active':''}" data-action="notes">Comments</button>
+      <button type="button" class="btn-mic" data-action="mic" aria-label="Voice comment" title="Voice comment"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="18" x2="12" y2="22"/></svg></button>
+      <button type="button" class="btn photo ${s.photosOpen?'active':''}" data-action="photos">Photos${s.photos.length?`<span class="badge">${s.photos.length}</span>`:''}</button>
+    </div>
+    <div class="note-area" style="display:${s.notes?'block':'none'}">
+      <textarea placeholder="Add inspection comments for ${pt}...">${s.notes?(s.noteText||''):''}</textarea>
+      <button type="button" class="note-save" data-action="save-comment">Save Comment</button>
+    </div>
+    <div class="saved-comment" style="display:${!s.notes&&s.noteText?'block':'none'}">${s.noteText?escHtml(s.noteText):''}</div>
+    <div class="card-extra">${!s.photosOpen&&s.photos.length?renderMiniGallery(pt):''}${s.photosOpen?renderPhotoPanel(pt):''}</div>
+  </div>`;
 }
 
-function statusRadiosHTML(s){
-  return[
-    ['poor','Poor'],
-    ['fair','Fair'],
-    ['good','Good']
-  ].map(([type,label])=>`<div class="radio ${type} ${s.status===label?'active':''}" data-status="${label}">${statusIcon(type)}${label}</div>`).join('');
-}
-
-function mmMeasureRingHTML(mm,cfg,status){
-  const pct=mmToScore(mm,cfg.max);const r=30;const{len,off}=circRing(r,pct);const st=status.toLowerCase();
-  return`<div class="score-ring ${st} measure-mm-ring">
+function measureRingHTML(mm,max=12){
+  const pct=Math.round((Math.max(0,Math.min(max,mm))/max)*100);const r=30;const{len,off}=circRing(r,pct);const st=max===12?rangeStatusByDepth(mm):rangeStatusByMax(mm,max);
+  return`<div class="score-ring ${st} tyre-depth-ring">
     <div class="circ">
       <svg viewBox="0 0 76 76" width="76" height="76">
         <circle class="circ-inner" cx="38" cy="38" r="${r}"/>
@@ -2794,80 +3150,38 @@ function mmMeasureRingHTML(mm,cfg,status){
   </div>`;
 }
 
-function buildCardHTML(pt,c,s,idx){
-  const cfg=getMeasureConfig(pt);
-  const mm=Number(s.measureMm??measureDefaults[pt]??5.5);
-  const sliderValue=cfg?fmtMm(mm):s.score;
-  const fillWidth=cfg?mmToScore(mm,cfg.max):s.score;
-  const sliderLabel=cfg?cfg.label:'Level';
-  const sliderDisplay=cfg?fmtMm(mm)+' mm':s.score+'%';
-  const ringHTML=cfg?mmMeasureRingHTML(mm,cfg,s.status):scoreRingHTML(s.score,s.status);
-  const rangeClass=s.status.toLowerCase();
-  const rangeAttrs=cfg?`min="0" max="${cfg.max}" step="${cfg.step}" data-mode="measure"`:'min="0" max="100" data-mode="score"';
-  const boxClass=cfg?'measure-mm-box'+(cfg.disc?' disc-measure':''):'';
-  const scaleHTML=cfg?`<div class="measure-scale">${cfg.scale.map(l=>`<span>${l}</span>`).join('')}</div>`:'';
-  return`<div class="card status-${s.status.toLowerCase()}" data-pt="${encodeURIComponent(pt)}" style="animation-delay:${idx*0.04}s">
-    <div class="card-head">
-      <div class="point">
-        <div><h3>${pt}</h3><p>Inspect and record condition</p></div>
-      </div>
-      ${ringHTML}
-    </div>
-    <div class="slider-box ${boxClass}">
-      <div class="slider-label"><span>${sliderLabel}</span><span class="slider-pct">${sliderDisplay}</span></div>
-      <div class="range-wrap ${rangeClass}">
-        <div class="range-fill" style="width:${fillWidth}%"></div>
-        <input class="range" type="range" ${rangeAttrs} value="${sliderValue}">
-      </div>
-      ${scaleHTML}
-    </div>
-    <div class="status-title">Condition Status</div>
-    <div class="radios">${statusRadiosHTML(s)}</div>
-    <div class="actions">
-      <button type="button" class="btn notes ${s.notes?'active':''}" data-action="notes">Comments</button>
-      <button type="button" class="btn photo ${s.photosOpen?'active':''}" data-action="photos">Photos${s.photos.length?`<span class="badge">${s.photos.length}</span>`:''}</button>
-    </div>
-    <div class="note-editor" style="display:${s.notes?'block':'none'}">
-      <textarea placeholder="Add inspection comments for ${pt}...">${s.notes?(s.noteText||''):''}</textarea>
-      <button type="button" class="note-save" data-action="save-comment">Save Comment</button>
-    </div>
-    <div class="saved-comment" style="display:${!s.notes&&s.noteText?'block':'none'}">${s.noteText?escHtml(s.noteText):''}</div>
-    <div class="card-extra">${!s.photosOpen&&s.photos.length?renderMiniGallery(pt):''}${s.photosOpen?renderPhotoPanel(pt):''}</div>
-  </div>`;
-}
-
-function applyCardTheme(card,pt){
-  const s=state[pt];
-  const st=s.status.toLowerCase();
-  const cfg=getMeasureConfig(pt);
-  card.className='card status-'+st;
-  const rw=card.querySelector('.range-wrap');
-  if(rw)rw.className='range-wrap '+st;
-  const ring=card.querySelector('.score-ring');
-  if(ring)ring.className='score-ring '+st+(cfg?' measure-mm-ring':'');
-}
-
 function updateCardScore(pt,score){
   const card=getCard(pt);if(!card)return;
-  const cfg=getMeasureConfig(pt);
-  const display=cfg?fmtMm(score)+' mm':score+'%';
-  const pct=cfg?mmToScore(score,cfg.max):score;
+  const isMeasure=isTyreDepthPoint(pt)||!!getBrakeConfig(pt);
+  const maxVal=isTyreDepthPoint(pt)?12:(getBrakeConfig(pt)?.max||100);
+  const display=isMeasure?fmtMm(score)+' mm':score+'%';
+  const pct=isMeasure?(Number(score)/maxVal*100):score;
   card.querySelector('.slider-pct').textContent=display;
   card.querySelector('.range-fill').style.width=pct+'%';
   const ringFill=card.querySelector('.score-ring .circ-fill');
   if(ringFill)setCircFill(ringFill,30,pct);
-  const ringText=card.querySelector('.score-ring .circ-text .score-pct')||card.querySelector('.score-ring .circ-text b');
-  if(ringText)ringText.textContent=cfg?fmtMm(score):score+'%';
+  const ringText=card.querySelector('.score-ring .circ-text b');
+  if(ringText)ringText.textContent=isMeasure?fmtMm(score):score+'%';
   const ringSmall=card.querySelector('.score-ring .circ-text small');
-  if(ringSmall&&cfg)ringSmall.textContent='mm';
-  applyCardTheme(card,pt);
+  if(ringSmall&&isMeasure)ringSmall.textContent='mm';
+  if(isMeasure){
+    const st=isTyreDepthPoint(pt)?rangeStatusByDepth(score):rangeStatusByMax(score,maxVal);
+    card.querySelector('.range-wrap').className='range-wrap '+st;
+    const ring=card.querySelector('.score-ring');
+    if(ring)ring.className='score-ring '+st+' tyre-depth-ring';
+  }
 }
 
 function updateCardStatus(pt){
   const card=getCard(pt);if(!card)return;
-  applyCardTheme(card,pt);
+  const s=state[pt];
+  const st=s.status.toLowerCase();
+  card.className='card status-'+st;
+  card.querySelector('.range-wrap').className='range-wrap '+st;
+  const ring=card.querySelector('.score-ring');
+  if(ring)ring.className='score-ring '+st;
   card.querySelectorAll('.radio').forEach(r=>{
-    r.classList.toggle('active',r.dataset.status===state[pt].status);
+    r.classList.toggle('active',r.dataset.status===s.status);
   });
 }
 
@@ -2876,33 +3190,40 @@ function updateSaveBtnVisibility(pt){
   const s=state[pt];
   const saveBtn=card.querySelector('.note-save');
   if(!saveBtn)return;
-  if(!s.notes){saveBtn.style.display='none';return;}
-  const ta=card.querySelector('.note-editor textarea');
+  if(!s.notes){saveBtn.style.display='none';return}
+  const ta=card.querySelector('.note-area textarea');
   saveBtn.style.display=(ta&&ta.value.trim())?'block':'none';
+}
+
+function saveComment(pt){
+  const card=getCard(pt);if(!card)return;
+  const ta=card.querySelector('.note-area textarea');
+  const text=ta?ta.value.trim():'';
+  if(!text){showToast('Please enter a comment');return}
+  state[pt].noteText=text;
+  state[pt].notes=false;
+  updateCardNotes(pt);
+  showToast('Comment saved');
 }
 
 function updateCardNotes(pt){
   const card=getCard(pt);if(!card)return;
   const s=state[pt];
-  const editor=card.querySelector('.note-editor');
+  const area=card.querySelector('.note-area');
   const saved=card.querySelector('.saved-comment');
-  if(editor)editor.style.display=s.notes?'block':'none';
+  if(area){
+    area.style.display=s.notes?'block':'none';
+    if(s.notes){
+      const ta=area.querySelector('textarea');
+      if(ta)ta.value=s.noteText||'';
+    }
+  }
   card.querySelector('.btn.notes').classList.toggle('active',s.notes);
   if(saved){
     saved.style.display=(!s.notes&&s.noteText)?'block':'none';
-    saved.textContent=s.noteText||'';
+    saved.innerHTML=s.noteText?escHtml(s.noteText):'';
   }
   updateSaveBtnVisibility(pt);
-}
-
-function saveComment(pt){
-  const card=getCard(pt);if(!card)return;
-  const ta=card.querySelector('.note-editor textarea');
-  const text=ta?ta.value.trim():'';
-  if(!text){showToast('Please enter a comment');return;}
-  state[pt].noteText=text;
-  state[pt].notes=false;
-  updateCardNotes(pt);
 }
 
 function updatePhotoBtn(pt){
@@ -2949,86 +3270,7 @@ function updateSummary(){
   document.getElementById('poorPct').textContent=pPct+'%';
   const overallPct=Math.round(Object.values(state).reduce((a,b)=>a+b.score,0)/Object.values(state).length);
   document.getElementById('overall').textContent=overallPct+'%';
-  setCircFill(document.getElementById('overallCirc'),36,overallPct);
-}
-
-function setProgressVisual(pct,dragging){
-  const fill=document.getElementById('progressFill');
-  const thumb=document.getElementById('progressThumb');
-  const pctEl=document.getElementById('progressPct');
-  if(dragging){
-    fill.style.transition='none';
-    thumb.style.transition='none';
-  }else{
-    fill.style.transition='';
-    thumb.style.transition='';
-  }
-  fill.style.width=pct+'%';
-  thumb.style.left=pct+'%';
-  pctEl.textContent=Math.round(pct);
-}
-
-function pctToIndex(pct){
-  const total=categories.length;
-  if(total<=1)return 0;
-  return Math.round(Math.max(0,Math.min(100,pct))/100*(total-1));
-}
-
-function indexToPct(i){
-  const total=categories.length;
-  return Math.round((i+1)/total*100);
-}
-
-function initProgressDrag(){
-  const track=document.getElementById('progressTrack');
-  if(!track||track.dataset.bound)return;
-  track.dataset.bound='1';
-
-  function pctFromEvent(e){
-    const rect=track.getBoundingClientRect();
-    const clientX=e.touches?e.touches[0].clientX:e.clientX;
-    const x=Math.max(0,Math.min(rect.width,clientX-rect.left));
-    return rect.width?(x/rect.width)*100:0;
-  }
-
-  function finishDrag(e){
-    if(!progressDragging)return;
-    progressDragging=false;
-    document.body.classList.remove('progress-dragging');
-    const clientX=e.changedTouches?e.changedTouches[0].clientX:e.clientX;
-    const pct=pctFromEvent({clientX,touches:null});
-    const idx=pctToIndex(pct);
-    if(idx!==current){
-      current=idx;
-      renderCategory();
-    }else{
-      updateStepbar();
-    }
-    window.removeEventListener('mousemove',onMove);
-    window.removeEventListener('mouseup',finishDrag);
-    window.removeEventListener('touchmove',onMove);
-    window.removeEventListener('touchend',finishDrag);
-  }
-
-  function onMove(e){
-    if(!progressDragging)return;
-    e.preventDefault();
-    setProgressVisual(pctFromEvent(e),true);
-  }
-
-  function startDrag(e){
-    if(e.button!==undefined&&e.button!==0)return;
-    progressDragging=true;
-    document.body.classList.add('progress-dragging');
-    setProgressVisual(pctFromEvent(e),true);
-    window.addEventListener('mousemove',onMove);
-    window.addEventListener('mouseup',finishDrag);
-    window.addEventListener('touchmove',onMove,{passive:false});
-    window.addEventListener('touchend',finishDrag);
-  }
-
-  track.addEventListener('mousedown',startDrag);
-  track.addEventListener('touchstart',startDrag,{passive:false});
+  setCircFill(document.getElementById('overallCirc'),38,overallPct);
 }
 
 function updateStepbar(){
@@ -3036,46 +3278,50 @@ function updateStepbar(){
   const total=c.points.length;
   const step=current+1;
   const catTotal=categories.length;
-  const pct=indexToPct(current);
+  const pct=Math.round(step/catTotal*100);
   catTitle.textContent=c.name;
   document.getElementById('catSub').textContent=total+' inspection point'+(total>1?'s':'');
   document.getElementById('stepNum').textContent=step;
   stepCount.textContent=`Step ${step} of ${catTotal}`;
   stepCount.classList.toggle('complete',step===catTotal);
   document.getElementById('stepRing').style.strokeDashoffset=188.5*(1-step/catTotal);
-  setProgressVisual(pct,false);
+  progressFill.style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct;
+  document.getElementById('progressThumb').style.left=pct+'%';
   document.getElementById('dockStep').textContent=`Step ${step} of ${catTotal}`;
   document.getElementById('prevBtn').disabled=current===0;
   document.getElementById('nextBtn').disabled=current===catTotal-1;
-  const track=document.getElementById('progressTrack');
-  if(track){
-    track.setAttribute('aria-valuemax',catTotal);
-    track.setAttribute('aria-valuenow',step);
-  }
   const dotsEl=document.getElementById('progressDots');
   dotsEl.innerHTML='';
   for(let i=0;i<catTotal;i++){
-    const d=document.createElement('button');
-    d.type='button';
+    const d=document.createElement('span');
     d.className='progress-dot'+(i<current?' done':'')+(i===current?' current':'');
-    d.setAttribute('aria-label','Go to step '+(i+1));
-    d.onclick=()=>{current=i;renderCategory();};
     dotsEl.appendChild(d);
   }
 }
 
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  document.querySelector('.wizard').classList.toggle('sidebar-collapsed',sidebarCollapsed);
+  document.getElementById('sidePanel').classList.toggle('collapsed',sidebarCollapsed);
+  const btn=document.getElementById('sideToggle');
+  btn.setAttribute('aria-expanded',!sidebarCollapsed);
+  btn.title=sidebarCollapsed?'Expand menu':'Collapse menu';
+  btn.setAttribute('aria-label',sidebarCollapsed?'Expand sidebar':'Collapse sidebar');
+}
+
 function renderCats(){
+  const q=document.getElementById('search').value.toLowerCase();
   catList.innerHTML='';
   categories.forEach((c,i)=>{
+    if(!c.name.toLowerCase().includes(q))return;
     const d=document.createElement('div');
     d.className='cat'+(i===current?' active':'')+(i<current?' done':'');
     d.onclick=()=>{current=i;renderCategory()};
     d.title=c.name;
-    d.innerHTML=c.name;
+    d.innerHTML=`<span class="tick">${i<current?'✓':c.icon}</span><span class="cat-name">${c.name}</span>`;
     catList.appendChild(d);
   });
-  const active=catList.querySelector('.cat.active');
-  if(active)active.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
 }
 
 function renderCards(animate){
@@ -3099,9 +3345,10 @@ cardsEl.addEventListener('input',e=>{
   if(e.target.classList.contains('range')){
     const v=+e.target.value;
     if(e.target.dataset.mode==='measure'){
-      const cfg=getMeasureConfig(pt);
-      state[pt].measureMm=v;
-      state[pt].score=mmToScore(v,cfg.max);
+      if(isTyreDepthPoint(pt))state[pt].treadDepth=v;
+      else state[pt].brakeThickness=v;
+      const maxVal=Number(e.target.dataset.max||12);
+      state[pt].score=Math.round((Math.max(0,Math.min(maxVal,v))/maxVal)*100);
       updateCardScore(pt,v);
     }else{
       state[pt].score=v;
@@ -3122,29 +3369,22 @@ cardsEl.addEventListener('click',e=>{
   if(radio){state[pt].status=radio.dataset.status;updateCardStatus(pt);updateSummary();return}
   const action=e.target.closest('[data-action]');
   if(action){
-    const act=action.dataset.action;
-    if(act==='notes'){
-      state[pt].notes=!state[pt].notes;
-      if(state[pt].notes){
-        const ta=card.querySelector('.note-editor textarea');
-        if(ta)ta.value=state[pt].noteText||'';
-      }
-      updateCardNotes(pt);
-      return;
-    }
-    if(act==='save-comment'){saveComment(pt);return}
-    if(act==='photos'){state[pt].photosOpen=!state[pt].photosOpen;updateCardPhotos(pt);return}
-    if(act==='open-photos'){state[pt].photosOpen=true;updateCardPhotos(pt);return}
-    if(act==='add-photo'){triggerUpload(pt,true);return}
+    if(action.dataset.action==='notes'){state[pt].notes=!state[pt].notes;updateCardNotes(pt)}
+    if(action.dataset.action==='save-comment'){saveComment(pt);return}
+    if(action.dataset.action==='mic'){startVoiceComment(pt);return}
+    if(action.dataset.action==='photos'){state[pt].photosOpen=!state[pt].photosOpen;updateCardPhotos(pt)}
+    return;
   }
+  if(e.target.closest('[data-action="open-photos"]')){state[pt].photosOpen=true;updateCardPhotos(pt);return}
+  if(e.target.closest('[data-action="add-photo"]')){triggerUpload(pt,false);return}
 });
 
 function updateScore(p,v){state[p].score=+v;updateCardScore(p,v);updateSummary()}
 function setStatus(p,v){state[p].status=v;updateCardStatus(p);updateSummary()}
-function toggleNotes(p){state[p].notes=!state[p].notes;if(state[p].notes){const c=getCard(p);const ta=c&&c.querySelector('.note-editor textarea');if(ta)ta.value=state[p].noteText||'';}updateCardNotes(p)}
+function toggleNotes(p){state[p].notes=!state[p].notes;updateCardNotes(p)}
 function nextCat(){current=Math.min(categories.length-1,current+1);renderCategory()}
 function prevCat(){current=Math.max(0,current-1);renderCategory()}
-initProgressDrag();
+document.getElementById('search').oninput=renderCats;
 renderCategory();
 </script>
 </body>

@@ -1406,10 +1406,37 @@ body.progress-dragging .progress-thumb {
 
 .actions {
   display: flex;
+  align-items: center;
   gap: 8px;
   margin-top: 14px;
   position: relative;
   z-index: 3;
+}
+
+.btn-mic {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22C55E, #16A34A);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.22), 0 8px 20px rgba(34, 197, 94, 0.32);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-mic:hover { transform: scale(1.06); }
+
+.btn-mic.listening {
+  animation: micPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.22), 0 8px 20px rgba(34, 197, 94, 0.32); }
+  50% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0.12), 0 8px 24px rgba(34, 197, 94, 0.42); }
 }
 
 .card-extra {
@@ -2786,6 +2813,95 @@ function showToast(msg) {
   showToast._t = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
+let voiceRec = null;
+let voicePt = null;
+let voiceBase = '';
+
+function clearMicUI() {
+  document.querySelectorAll('.btn-mic.listening').forEach(b => b.classList.remove('listening'));
+}
+
+function applyVoiceComment(pt, text) {
+  if (!text) return;
+  state[pt].noteText = text;
+  state[pt].notes = false;
+  updateCardNotes(pt);
+  showToast('Comment saved');
+}
+
+function stopVoiceListening(save = true) {
+  if (!voiceRec) return;
+  const pt = voicePt;
+  const rec = voiceRec;
+  voiceRec = null;
+  voicePt = null;
+  clearMicUI();
+  try { rec.stop(); } catch (e) {}
+  if (save && pt) {
+    const ta = getCard(pt)?.querySelector('.note-editor textarea');
+    applyVoiceComment(pt, ta ? ta.value.trim() : '');
+  }
+}
+
+function startVoiceComment(pt) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showToast('Voice not supported in this browser'); return; }
+  const card = getCard(pt);
+  if (!card) return;
+  if (voiceRec && voicePt === pt) { stopVoiceListening(true); return; }
+  if (voiceRec) stopVoiceListening(false);
+  state[pt].notes = true;
+  updateCardNotes(pt);
+  const ta = card.querySelector('.note-editor textarea');
+  voiceBase = (ta?.value.trim() || state[pt].noteText || '').trim();
+  if (ta) ta.value = voiceBase;
+  voicePt = pt;
+  voiceRec = new SR();
+  voiceRec.lang = navigator.language || 'en-US';
+  voiceRec.interimResults = true;
+  voiceRec.continuous = true;
+  card.querySelector('[data-action="mic"]')?.classList.add('listening');
+  voiceRec.onresult = (e) => {
+    let final = voiceBase;
+    let interim = '';
+    for (let i = 0; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript.trim();
+      if (!t) continue;
+      if (e.results[i].isFinal) final = final ? (final + ' ' + t) : t;
+      else interim = t;
+    }
+    if (ta) {
+      ta.value = interim ? ((final ? final + ' ' : '') + interim) : final;
+      updateSaveBtnVisibility(pt);
+    }
+  };
+  voiceRec.onerror = (e) => {
+    if (e.error !== 'aborted') showToast(e.error === 'not-allowed' ? 'Allow microphone access' : 'Voice input failed');
+    voiceRec = null;
+    voicePt = null;
+    clearMicUI();
+  };
+  voiceRec.onend = () => {
+    if (!voicePt) return;
+    const activePt = voicePt;
+    const textarea = getCard(activePt)?.querySelector('.note-editor textarea');
+    const text = textarea?.value.trim() || '';
+    voiceRec = null;
+    voicePt = null;
+    clearMicUI();
+    applyVoiceComment(activePt, text);
+  };
+  try {
+    voiceRec.start();
+    showToast('Listening… tap mic to stop');
+  } catch (err) {
+    showToast('Could not start microphone');
+    voiceRec = null;
+    voicePt = null;
+    clearMicUI();
+  }
+}
+
 function circRing(r, pct) {
   const len = 2 * Math.PI * r;
   return { len, off: len * (1 - pct / 100) };
@@ -3215,6 +3331,7 @@ function buildCardHTML(pt, c, s, idx) {
     <div class="segmented">${statusSegHTML(s)}</div>
     <div class="actions">
       <button type="button" class="btn notes ${s.notes ? 'active' : ''}" data-action="notes">Comment</button>
+      <button type="button" class="btn-mic" data-action="mic" aria-label="Voice comment" title="Voice comment"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="18" x2="12" y2="22"/></svg></button>
       <button type="button" class="btn photo ${s.photosOpen ? 'active' : ''}" data-action="photos">Photos${s.photos.length ? `<span class="badge">${s.photos.length}</span>` : ''}</button>
     </div>
     <div class="note-editor" style="display:${s.notes ? 'block' : 'none'}">
@@ -3401,6 +3518,7 @@ cardsEl.addEventListener('click', e => {
       return;
     }
     if (act === 'save-comment') { saveComment(pt); return; }
+    if (act === 'mic') { startVoiceComment(pt); return; }
     if (act === 'photos') { state[pt].photosOpen = !state[pt].photosOpen; updateCardPhotos(pt); return; }
     if (act === 'open-photos') { state[pt].photosOpen = true; updateCardPhotos(pt); return; }
     if (act === 'add-photo') { triggerUpload(pt, true); return; }
